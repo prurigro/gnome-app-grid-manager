@@ -2,7 +2,6 @@ package xdg
 
 import (
 	"bufio"
-	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -74,7 +73,7 @@ func isDesktopFileDisplayed(filePath string) (bool) {
 }
 
 func populateDesktopFiles(dir string) {
-	items, _ := ioutil.ReadDir(dir)
+	items, _ := os.ReadDir(dir)
 
 	for _, item := range items {
 		if item.IsDir() {
