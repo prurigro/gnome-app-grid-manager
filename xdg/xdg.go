@@ -51,6 +51,7 @@ func getDesktopDirs() []string {
 	return desktopDirs
 }
 
+// Checks to see if a .desktop file is configured with NoDisplay=true, Hidden=true or NotShowIn=gnome
 func isDesktopFileDisplayed(filePath string) (bool) {
 	file, err := os.Open(filePath)
 
@@ -72,6 +73,7 @@ func isDesktopFileDisplayed(filePath string) (bool) {
 	return true
 }
 
+// Adds unseen .desktop files in a given directory and below to either DisplayFiles or noDisplayFiles
 func populateDesktopFiles(dir string) {
 	items, _ := os.ReadDir(dir)
 
