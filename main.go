@@ -12,10 +12,10 @@ func main() {
 	uiResponse = ui.LoadList("Main Menu", []string{"List Applications", "Quit"});
 
 	if (uiResponse == 0) {
-		uiResponse = ui.LoadList("Select an application", xdg.DisplayFiles);
+		uiResponse = ui.LoadList("Select an application", xdg.AppNames());
 
 		if (uiResponse != -1) {
-			fmt.Println(xdg.DisplayFiles[uiResponse])
+			fmt.Println(xdg.FileNames()[uiResponse])
 		}
 	} else {
 		fmt.Println("Quitting...")

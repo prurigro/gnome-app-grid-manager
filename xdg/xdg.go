@@ -10,8 +10,14 @@ import (
 	"strings"
 )
 
+type xdgMeta struct {
+	appName string
+	fileName string
+}
+
 var (
-	DisplayFiles = []string{}
+	FilesMeta = []xdgMeta{}
+	displayFiles = []string{}
 	noDisplayFiles = []string{}
 )
 
@@ -52,7 +58,13 @@ func getDesktopDirs() []string {
 }
 
 // Checks to see if a .desktop file is configured with NoDisplay=true, Hidden=true or NotShowIn=gnome
-func isDesktopFileDisplayed(filePath string) (bool) {
+func getDesktopFileMeta(dir string, filename string) (string, bool) {
+	var (
+		filePath string = dir + "/" + filename
+		display bool = false
+		name string = ""
+	)
+
 	file, err := os.Open(filePath)
 
 	if err != nil {
@@ -62,29 +74,38 @@ func isDesktopFileDisplayed(filePath string) (bool) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)(nodisplay|hidden|notshowin) *= *(true|gnome)")
+	nameMatchRegex := regexp.MustCompile("(?i)^ *name *= *(.*) *$")
+	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)^ *(nodisplay|hidden|notshowin) *= *(true|gnome)")
 
 	for scanner.Scan() {
-		if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
-			return false
+		if nameMatchRegex.MatchString(scanner.Text()) {
+			nameMatchReference := nameMatchRegex.FindStringSubmatch(scanner.Text())
+			name = nameMatchReference[1]
+		} else if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
+			display = true
 		}
 	}
 
-	return true
+	if (name == "") {
+		name = filename
+	}
+
+	return name, display
 }
 
-// Adds unseen .desktop files in a given directory and below to either DisplayFiles or noDisplayFiles
+// Adds unseen .desktop files in a given directory and below to either displayFiles or noDisplayFiles
 func populateDesktopFiles(dir string) {
 	items, _ := os.ReadDir(dir)
 
 	for _, item := range items {
 		if item.IsDir() {
 			populateDesktopFiles(dir + "/" + item.Name())
-		} else if !slices.Contains(DisplayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
-			desktopFileDisplayed := isDesktopFileDisplayed(dir + "/" + item.Name())
+		} else if !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
+			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
-			if desktopFileDisplayed {
-				DisplayFiles = append(DisplayFiles, item.Name())
+			if displayed {
+				FilesMeta = append(FilesMeta, xdgMeta{ appName: appName, fileName: item.Name() })
+				displayFiles = append(displayFiles, item.Name())
 			} else {
 				noDisplayFiles = append(noDisplayFiles, item.Name())
 			}
@@ -92,14 +113,36 @@ func populateDesktopFiles(dir string) {
 	}
 }
 
+// Returns an array of file names
+func FileNames() []string {
+	var fileNames []string
+
+	for _, file := range FilesMeta {
+		fileNames = append(fileNames, file.fileName)
+	}
+
+	return fileNames
+}
+
+// Returns an array of app names
+func AppNames() []string {
+	var appNames []string
+
+	for _, file := range FilesMeta {
+		appNames = append(appNames, file.appName)
+	}
+
+	return appNames
+}
+
 func init() {
-	// Loop through xdg desktop directories in order of priority and populate the DisplayFiles array
+	// Loop through xdg desktop directories in order of priority and populate the FilesMeta array
 	for _, dir := range getDesktopDirs() {
 		populateDesktopFiles(dir)
 	}
 
 	// Sort alphabetically (case insensitive)
-	sort.Slice(DisplayFiles, func(x, y int) bool {
-		return strings.ToLower(DisplayFiles[x]) < strings.ToLower(DisplayFiles[y])
+	sort.Slice(FilesMeta, func(x, y int) bool {
+		return strings.ToLower(FilesMeta[x].appName) < strings.ToLower(FilesMeta[y].appName)
 	})
 }
