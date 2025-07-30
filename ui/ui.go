@@ -20,22 +20,36 @@ var (
 	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 2)
 )
 
+// Selected value
+var selectedValue int = -1
+
 // List item definition
-type item string
+type item struct {
+	index int
+	value string
+}
 
 func (i item) FilterValue() string {
 	return ""
 }
 
+// Array of items
 var items = []list.Item{}
-
 
 // List item format
 type itemDelegate struct{}
 
-func (d itemDelegate) Height() int { return 1 }
-func (d itemDelegate) Spacing() int { return 0 }
-func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Height() int {
+	return 1
+}
+
+func (d itemDelegate) Spacing() int {
+	return 0
+}
+
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd {
+	return nil
+}
 
 func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
 	i, ok := listItem.(item)
@@ -44,7 +58,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%d. %s", index+1, i)
+	str := fmt.Sprintf("%d. %s", index+1, i.value)
 	fn := itemStyle.Render
 
 	if index == m.Index() {
@@ -56,7 +70,6 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-// Data model
 type model struct {
 	list     list.Model
 	choice   string
@@ -86,7 +99,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				i, ok := m.list.SelectedItem().(item)
 
 				if ok {
-					m.choice = string(i)
+					selectedValue = i.index
+					m.choice = i.value
 				}
 
 				return m, tea.Quit
@@ -99,7 +113,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("Selecting %s", m.choice))
+		return ""
 	}
 
 	if m.quitting {
@@ -109,11 +123,12 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func LoadList(title string, listItems []string) {
+func LoadList(title string, listItems []string) (int) {
+	selectedValue = -1
 	items = nil
 
-	for _, file := range listItems {
-		items = append(items, item(file))
+	for index, value := range listItems {
+		items = append(items, item{index, value})
 	}
 
 	l := list.New(items, itemDelegate{}, 1, 1)
@@ -125,9 +140,12 @@ func LoadList(title string, listItems []string) {
 	l.Styles.HelpStyle = helpStyle
 
 	m := model{list: l}
+	_, err := tea.NewProgram(m).Run()
 
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+	return selectedValue
 }
