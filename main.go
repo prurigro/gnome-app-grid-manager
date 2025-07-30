@@ -9,7 +9,7 @@ import (
 var uiResponse int
 
 func main() {
-	uiResponse = ui.LoadList("Select Functionality", []string{"List Applications", "Quit"});
+	uiResponse = ui.LoadList("Main Menu", []string{"List Applications", "Quit"});
 
 	if (uiResponse == 0) {
 		uiResponse = ui.LoadList("Select an application", xdg.DisplayFiles);
