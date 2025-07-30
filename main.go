@@ -9,9 +9,15 @@ import (
 var uiResponse int
 
 func main() {
-	uiResponse = ui.LoadList("Select an application", xdg.DisplayFiles);
+	uiResponse = ui.LoadList("Select Functionality", []string{"List Applications", "Quit"});
 
-	if (uiResponse != -1) {
-		fmt.Println(xdg.DisplayFiles[uiResponse])
+	if (uiResponse == 0) {
+		uiResponse = ui.LoadList("Select an application", xdg.DisplayFiles);
+
+		if (uiResponse != -1) {
+			fmt.Println(xdg.DisplayFiles[uiResponse])
+		}
+	} else {
+		fmt.Println("Quitting...")
 	}
 }
