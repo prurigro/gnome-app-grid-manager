@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/xdg"
 )
 
 // Style
@@ -29,6 +28,7 @@ func (i item) FilterValue() string {
 }
 
 var items = []list.Item{}
+
 
 // List item format
 type itemDelegate struct{}
@@ -109,7 +109,13 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func LoadList(title string) {
+func LoadList(title string, listItems []string) {
+	items = nil
+
+	for _, file := range listItems {
+		items = append(items, item(file))
+	}
+
 	l := list.New(items, itemDelegate{}, 1, 1)
 	l.Title = title
 	l.SetShowStatusBar(false)
@@ -124,14 +130,4 @@ func LoadList(title string) {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
-}
-
-func CategoriesList() {
-	items = nil
-
-	for _, file := range xdg.DisplayFiles {
-		items = append(items, item(file))
-	}
-
-	LoadList("Select an application")
 }
