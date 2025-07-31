@@ -79,8 +79,7 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 
 	for scanner.Scan() {
 		if nameMatchRegex.MatchString(scanner.Text()) {
-			nameMatchReference := nameMatchRegex.FindStringSubmatch(scanner.Text())
-			name = nameMatchReference[1]
+			name = nameMatchRegex.FindStringSubmatch(scanner.Text())[1]
 		} else if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
 			display = true
 		}
