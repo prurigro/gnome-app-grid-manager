@@ -6,9 +6,8 @@ import (
 	"log"
 	"os"
 	"regexp"
-	// "slices"
-	// "sort"
-	// "strings"
+	"sort"
+	"strings"
 )
 
 type category struct {
@@ -81,12 +80,12 @@ func Populate() {
 				}
 			}
 
-			Categories = append(Categories, category{ file: catFile.Name(), name: catNameMatchReference[1], applications: []string{} })
+			// Sort alphabetically (case insensitive)
+			sort.Slice(files, func(x, y int) bool {
+				return strings.ToLower(files[x]) < strings.ToLower(files[y])
+			})
 
-			// // Sort alphabetically (case insensitive)
-			// sort.Slice(list, func(x, y int) bool {
-			// 	return strings.ToLower(list[x]) < strings.ToLower(list[y])
-			// })
+			Categories = append(Categories, category{ file: catFile.Name(), name: catNameMatchReference[1], applications: files })
 		}
 	}
 
