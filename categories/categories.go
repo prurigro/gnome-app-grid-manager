@@ -22,6 +22,12 @@ var (
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
 )
 
+func createCatDirWhenMissing() {
+	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
+		os.MkdirAll(categoriesDirectory, 0755)
+	}
+}
+
 // Returns an array of file names
 func FileNames() []string {
 	var fileNames []string
@@ -44,13 +50,7 @@ func CatNames() []string {
 	return catNames
 }
 
-func createCatDirWhenMissing() {
-	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
-		os.MkdirAll(categoriesDirectory, 0755)
-	}
-}
-
-func populateCategories() {
+func Populate() {
 	var files []string
 
 	createCatDirWhenMissing()
@@ -94,5 +94,5 @@ func populateCategories() {
 }
 
 func init() {
-	populateCategories()
+	Populate()
 }

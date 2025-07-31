@@ -21,28 +21,6 @@ var (
 	noDisplayFiles = []string{}
 )
 
-// Returns an array of file names
-func FileNames() []string {
-	var fileNames []string
-
-	for _, item := range Launchers {
-		fileNames = append(fileNames, item.fileName)
-	}
-
-	return fileNames
-}
-
-// Returns an array of app names
-func AppNames() []string {
-	var appNames []string
-
-	for _, item := range Launchers {
-		appNames = append(appNames, item.appName)
-	}
-
-	return appNames
-}
-
 // Takes an xdg data folder and appends /applications without adding two slashes
 func xdgToApplications(dir string) string {
 	// Add a slash to the end if one doesn't already exist
@@ -57,7 +35,7 @@ func xdgToApplications(dir string) string {
 }
 
 // Returns the existing directories that contain xdg desktop files
-func getDesktopDirs() []string {
+func getDesktopFileDirectories() []string {
 	var desktopDirs []string
 
 	// Add the user's applications directory if it exists
@@ -115,7 +93,7 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 }
 
 // Adds unseen .desktop files in a given directory and below to either displayFiles or noDisplayFiles
-func populateDesktopFiles(dir string) {
+func addDirectoryDesktopFiles(dir string) {
 	items, _ := os.ReadDir(dir)
 
 	// Regex to ensure we're only looking at .desktop files
@@ -123,7 +101,7 @@ func populateDesktopFiles(dir string) {
 
 	for _, item := range items {
 		if item.IsDir() {
-			populateDesktopFiles(dir + "/" + item.Name())
+			addDirectoryDesktopFiles(dir + "/" + item.Name())
 		} else if xdgMatchRegex.MatchString(item.Name()) && !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
 			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
@@ -137,14 +115,40 @@ func populateDesktopFiles(dir string) {
 	}
 }
 
-func init() {
+// Returns an array of file names
+func FileNames() []string {
+	var fileNames []string
+
+	for _, item := range Launchers {
+		fileNames = append(fileNames, item.fileName)
+	}
+
+	return fileNames
+}
+
+// Returns an array of app names
+func AppNames() []string {
+	var appNames []string
+
+	for _, item := range Launchers {
+		appNames = append(appNames, item.appName)
+	}
+
+	return appNames
+}
+
+func Populate() {
 	// Loop through xdg desktop directories in order of priority and populate the Launchers array
-	for _, dir := range getDesktopDirs() {
-		populateDesktopFiles(dir)
+	for _, dir := range getDesktopFileDirectories() {
+		addDirectoryDesktopFiles(dir)
 	}
 
 	// Sort alphabetically (case insensitive)
 	sort.Slice(Launchers, func(x, y int) bool {
 		return strings.ToLower(Launchers[x].appName) < strings.ToLower(Launchers[y].appName)
 	})
+}
+
+func init() {
+	Populate()
 }
