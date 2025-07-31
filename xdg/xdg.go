@@ -21,6 +21,28 @@ var (
 	noDisplayFiles = []string{}
 )
 
+// Returns an array of file names
+func FileNames() []string {
+	var fileNames []string
+
+	for _, item := range Launchers {
+		fileNames = append(fileNames, item.fileName)
+	}
+
+	return fileNames
+}
+
+// Returns an array of app names
+func AppNames() []string {
+	var appNames []string
+
+	for _, item := range Launchers {
+		appNames = append(appNames, item.appName)
+	}
+
+	return appNames
+}
+
 // Takes an xdg data folder and appends /applications without adding two slashes
 func xdgToApplications(dir string) string {
 	// Add a slash to the end if one doesn't already exist
@@ -113,28 +135,6 @@ func populateDesktopFiles(dir string) {
 			}
 		}
 	}
-}
-
-// Returns an array of file names
-func FileNames() []string {
-	var fileNames []string
-
-	for _, item := range Launchers {
-		fileNames = append(fileNames, item.fileName)
-	}
-
-	return fileNames
-}
-
-// Returns an array of app names
-func AppNames() []string {
-	var appNames []string
-
-	for _, item := range Launchers {
-		appNames = append(appNames, item.appName)
-	}
-
-	return appNames
 }
 
 func init() {
