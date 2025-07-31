@@ -73,9 +73,9 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 
 	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
 	nameMatchRegex := regexp.MustCompile("(?i)^ *name *= *(.*) *$")
 	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)^ *(nodisplay|hidden|notshowin) *= *(true|gnome)")
+	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
 		if nameMatchRegex.MatchString(scanner.Text()) {
