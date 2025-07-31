@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-type xdgMeta struct {
+type launcher struct {
 	appName string
 	fileName string
 }
 
 var (
-	FilesMeta = []xdgMeta{}
+	Launchers = []launcher{}
 	displayFiles = []string{}
 	noDisplayFiles = []string{}
 )
@@ -97,14 +97,17 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 func populateDesktopFiles(dir string) {
 	items, _ := os.ReadDir(dir)
 
+	// Regex to ensure we're only looking at .desktop files
+	xdgMatchRegex := regexp.MustCompile("(?i)^ *(.*)\\.desktop *$")
+
 	for _, item := range items {
 		if item.IsDir() {
 			populateDesktopFiles(dir + "/" + item.Name())
-		} else if !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
+		} else if xdgMatchRegex.MatchString(item.Name()) && !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
 			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
 			if displayed {
-				FilesMeta = append(FilesMeta, xdgMeta{ appName: appName, fileName: item.Name() })
+				Launchers = append(Launchers, launcher{ appName: appName, fileName: item.Name() })
 				displayFiles = append(displayFiles, item.Name())
 			} else {
 				noDisplayFiles = append(noDisplayFiles, item.Name())
@@ -117,8 +120,8 @@ func populateDesktopFiles(dir string) {
 func FileNames() []string {
 	var fileNames []string
 
-	for _, file := range FilesMeta {
-		fileNames = append(fileNames, file.fileName)
+	for _, item := range Launchers {
+		fileNames = append(fileNames, item.fileName)
 	}
 
 	return fileNames
@@ -128,21 +131,21 @@ func FileNames() []string {
 func AppNames() []string {
 	var appNames []string
 
-	for _, file := range FilesMeta {
-		appNames = append(appNames, file.appName)
+	for _, item := range Launchers {
+		appNames = append(appNames, item.appName)
 	}
 
 	return appNames
 }
 
 func init() {
-	// Loop through xdg desktop directories in order of priority and populate the FilesMeta array
+	// Loop through xdg desktop directories in order of priority and populate the Launchers array
 	for _, dir := range getDesktopDirs() {
 		populateDesktopFiles(dir)
 	}
 
 	// Sort alphabetically (case insensitive)
-	sort.Slice(FilesMeta, func(x, y int) bool {
-		return strings.ToLower(FilesMeta[x].appName) < strings.ToLower(FilesMeta[y].appName)
+	sort.Slice(Launchers, func(x, y int) bool {
+		return strings.ToLower(Launchers[x].appName) < strings.ToLower(Launchers[y].appName)
 	})
 }
