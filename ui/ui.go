@@ -7,6 +7,7 @@ import (
 	"strings"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -19,6 +20,31 @@ var (
 	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(3).PaddingBottom(1)
 	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 2)
 )
+
+// Additional keybindings for help
+type keyMap struct {
+	Enter key.Binding
+	Backspace key.Binding
+}
+
+func (k keyMap) AdditionalShortHelp() []key.Binding {
+	return []key.Binding{k.Enter, k.Backspace}
+}
+
+func (k keyMap) AdditionalFullHelp() []key.Binding {
+	return []key.Binding{k.Enter, k.Backspace}
+}
+
+var keys = keyMap{
+	Enter: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "select"),
+	),
+	Backspace: key.NewBinding(
+		key.WithKeys("backspace"),
+		key.WithHelp("bksp", "back"),
+	),
+}
 
 // Selected value
 var selectedValue int = -1
@@ -58,7 +84,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%d. %s", index+1, i.value)
+	str := fmt.Sprintf("%d. %s", index + 1, i.value)
 	fn := itemStyle.Render
 
 	if index == m.Index() {
@@ -90,24 +116,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyMsg:
 			switch keypress := msg.String(); keypress {
+				case "q", "ctrl+c":
+					m.quitting = true
+					return m, tea.Quit
 
-			case "q", "ctrl+c":
-				m.quitting = true
-				return m, tea.Quit
+				case "backspace":
+					selectedValue = -2
+					return m, tea.Quit
 
-			case "left":
-				selectedValue = -2
-				return m, tea.Quit
+				case "enter":
+					i, ok := m.list.SelectedItem().(item)
 
-			case "enter":
-				i, ok := m.list.SelectedItem().(item)
+					if ok {
+						selectedValue = i.index
+						m.choice = i.value
+					}
 
-				if ok {
-					selectedValue = i.index
-					m.choice = i.value
-				}
-
-				return m, tea.Quit
+					return m, tea.Quit
 			}
 	}
 
@@ -142,6 +167,9 @@ func LoadList(title string, listItems []string) (int) {
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
+
+	l.AdditionalShortHelpKeys = keys.AdditionalShortHelp
+	l.AdditionalFullHelpKeys = keys.AdditionalFullHelp
 
 	m := model{list: l}
 	_, err := tea.NewProgram(m).Run()
