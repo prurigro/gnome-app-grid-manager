@@ -13,8 +13,14 @@ var (
 )
 
 func manageCategories() {
+	var (
+		prevCategoryIndex int = 0
+		prevApplicationIndex int = 0
+	)
+
 	for {
-		uiResponse = ui.LoadList("Select a category", categories.CatNames);
+		uiResponse = ui.LoadList("Select a category", categories.CatNames, prevCategoryIndex);
+		prevCategoryIndex = uiResponse
 
 		if uiResponse == -1 || uiResponse == -2 {
 			return
@@ -22,17 +28,24 @@ func manageCategories() {
 
 		catIndex := uiResponse
 		category := categories.List[catIndex]
-		uiResponse = ui.LoadList("Select an application", xdg.GetAppNames(category.Applications))
+		prevApplicationIndex = 0
 
-		if uiResponse == -1 {
-			return
+		for {
+			uiResponse = ui.LoadList("Select an application", xdg.GetAppNames(category.Applications), prevApplicationIndex)
+			prevApplicationIndex = uiResponse
+
+			if uiResponse == -1 {
+				return
+			} else if uiResponse == -2 {
+				break
+			}
 		}
 	}
 }
 
 func main() {
 	for uiResponse != -1 && uiResponse != len(mainMenu) - 1 {
-		uiResponse = ui.LoadList("Main Menu", mainMenu);
+		uiResponse = ui.LoadList("Main Menu", mainMenu, 0);
 
 		switch uiResponse {
 			case 0:

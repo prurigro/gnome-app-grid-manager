@@ -11,6 +11,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// Selected value
+var selectedValue int = -1
+
 // Style
 var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(1)
@@ -45,9 +48,6 @@ var keys = keyMap{
 		key.WithHelp("bksp", "back"),
 	),
 }
-
-// Selected value
-var selectedValue int = -1
 
 // List item definition
 type item struct {
@@ -152,7 +152,7 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func LoadList(title string, listItems []string) (int) {
+func LoadList(title string, listItems []string, startingIndex int) (int) {
 	selectedValue = -1
 	items = nil
 
@@ -170,6 +170,7 @@ func LoadList(title string, listItems []string) (int) {
 
 	l.AdditionalShortHelpKeys = keys.AdditionalShortHelp
 	l.AdditionalFullHelpKeys = keys.AdditionalFullHelp
+	l.Select(startingIndex)
 
 	m := model{list: l}
 	_, err := tea.NewProgram(m).Run()
