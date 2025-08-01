@@ -3,28 +3,42 @@ package main
 import (
 	"fmt"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/categories"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/xdg"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/ui"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/xdg"
 )
 
-var uiResponse int
+var (
+	uiResponse int // -1 is quit, -2 is back
+	mainMenu = []string{"Categories", "Quit"}
+)
+
+func manageCategories() {
+	for {
+		uiResponse = ui.LoadList("Select a category", categories.CatNames);
+
+		if uiResponse == -1 || uiResponse == -2 {
+			return
+		}
+
+		catIndex := uiResponse
+		category := categories.List[catIndex]
+		uiResponse = ui.LoadList("Select an application", xdg.GetAppNames(category.Applications))
+
+		if uiResponse == -1 {
+			return
+		}
+	}
+}
 
 func main() {
-	uiResponse = ui.LoadList("Main Menu", []string{"List Applications", "List Categories", "Quit"});
+	for uiResponse != -1 && uiResponse != len(mainMenu) - 1 {
+		uiResponse = ui.LoadList("Main Menu", mainMenu);
 
-	if (uiResponse == 0) {
-		uiResponse = ui.LoadList("Select an application", xdg.AppNames());
-
-		if (uiResponse != -1) {
-			fmt.Println(xdg.FileNames()[uiResponse])
+		switch uiResponse {
+			case 0:
+				manageCategories()
 		}
-	} else if (uiResponse == 1) {
-		uiResponse = ui.LoadList("Select a category", categories.CatNames());
-
-		if (uiResponse != -1) {
-			fmt.Println(categories.FileNames()[uiResponse])
-		}
-	} else {
-		fmt.Println("Quitting...")
 	}
+
+	fmt.Println("Quitting...")
 }

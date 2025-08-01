@@ -95,6 +95,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.quitting = true
 				return m, tea.Quit
 
+			case "left":
+				selectedValue = -2
+				return m, tea.Quit
+
 			case "enter":
 				i, ok := m.list.SelectedItem().(item)
 
@@ -117,7 +121,7 @@ func (m model) View() string {
 	}
 
 	if m.quitting {
-		return quitTextStyle.Render("Quitting...")
+		return ""
 	}
 
 	return "\n" + m.list.View()

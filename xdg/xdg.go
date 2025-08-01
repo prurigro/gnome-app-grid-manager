@@ -10,13 +10,16 @@ import (
 	"strings"
 )
 
-type launcher struct {
-	appName string
-	fileName string
+type Launcher struct {
+	AppName string
+	FileName string
 }
 
 var (
-	Launchers = []launcher{}
+	List = []Launcher{}
+	FileNames = []string{}
+	AppNames = []string{}
+	FileMatchRegex = regexp.MustCompile("(?i) *(.*)\\.desktop *$")
 	displayFiles = []string{}
 	noDisplayFiles = []string{}
 )
@@ -61,7 +64,7 @@ func getDesktopFileDirectories() []string {
 func getDesktopFileMeta(dir string, filename string) (string, bool) {
 	var (
 		filePath string = dir + "/" + filename
-		display bool = false
+		display bool = true
 		name string = ""
 	)
 
@@ -80,8 +83,10 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 	for scanner.Scan() {
 		if nameMatchRegex.MatchString(scanner.Text()) {
 			name = nameMatchRegex.FindStringSubmatch(scanner.Text())[1]
-		} else if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
-			display = true
+		}
+
+		if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
+			display = false
 		}
 	}
 
@@ -96,17 +101,14 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 func addDirectoryDesktopFiles(dir string) {
 	items, _ := os.ReadDir(dir)
 
-	// Regex to ensure we're only looking at .desktop files
-	xdgMatchRegex := regexp.MustCompile("(?i)^ *(.*)\\.desktop *$")
-
 	for _, item := range items {
 		if item.IsDir() {
 			addDirectoryDesktopFiles(dir + "/" + item.Name())
-		} else if xdgMatchRegex.MatchString(item.Name()) && !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
+		} else if FileMatchRegex.MatchString(item.Name()) && !slices.Contains(displayFiles, item.Name()) && !slices.Contains(noDisplayFiles, item.Name()) {
 			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
 			if displayed {
-				Launchers = append(Launchers, launcher{ appName: appName, fileName: item.Name() })
+				List = append(List, Launcher{ AppName: appName, FileName: item.Name() })
 				displayFiles = append(displayFiles, item.Name())
 			} else {
 				noDisplayFiles = append(noDisplayFiles, item.Name())
@@ -115,38 +117,54 @@ func addDirectoryDesktopFiles(dir string) {
 	}
 }
 
-// Returns an array of file names
-func FileNames() []string {
+// Returns an array of file names from a list of launchers
+func GetFileNames(launchers []Launcher) []string {
 	var fileNames []string
 
-	for _, item := range Launchers {
-		fileNames = append(fileNames, item.fileName)
+	for _, item := range launchers {
+		fileNames = append(fileNames, item.FileName)
 	}
 
 	return fileNames
 }
 
-// Returns an array of app names
-func AppNames() []string {
+// Returns an array of app names from a list of launchers
+func GetAppNames(launchers []Launcher) []string {
 	var appNames []string
 
-	for _, item := range Launchers {
-		appNames = append(appNames, item.appName)
+	for _, item := range launchers {
+		appNames = append(appNames, item.AppName)
 	}
 
 	return appNames
 }
 
+// Updates the list of all file names
+func UpdateFileNames() {
+	FileNames = GetFileNames(List)
+}
+
+// Updates the list of all app names
+func UpdateAppNames() {
+	AppNames = GetAppNames(List)
+}
+
+// Populate the List of xdg launchers
 func Populate() {
-	// Loop through xdg desktop directories in order of priority and populate the Launchers array
+	List = nil
+
+	// Loop through xdg desktop directories in order of priority and populate the List array
 	for _, dir := range getDesktopFileDirectories() {
 		addDirectoryDesktopFiles(dir)
 	}
 
 	// Sort alphabetically (case insensitive)
-	sort.Slice(Launchers, func(x, y int) bool {
-		return strings.ToLower(Launchers[x].appName) < strings.ToLower(Launchers[y].appName)
+	sort.Slice(List, func(x, y int) bool {
+		return strings.ToLower(List[x].AppName) < strings.ToLower(List[y].AppName)
 	})
+
+	UpdateFileNames()
+	UpdateAppNames()
 }
 
 func init() {
