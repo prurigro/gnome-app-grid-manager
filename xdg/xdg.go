@@ -81,7 +81,7 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		if nameMatchRegex.MatchString(scanner.Text()) {
+		if name == "" && nameMatchRegex.MatchString(scanner.Text()) {
 			name = nameMatchRegex.FindStringSubmatch(scanner.Text())[1]
 		}
 
