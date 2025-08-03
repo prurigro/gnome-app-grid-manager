@@ -170,6 +170,11 @@ func LoadList(title string, listItems []string, startingIndex int) (int) {
 
 	l.AdditionalShortHelpKeys = keys.AdditionalShortHelp
 	l.AdditionalFullHelpKeys = keys.AdditionalFullHelp
+
+	if startingIndex >= len(listItems) - 1 {
+		startingIndex = len(listItems) - 1
+	}
+
 	l.Select(startingIndex)
 
 	m := model{list: l}
