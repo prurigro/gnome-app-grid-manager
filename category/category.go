@@ -1,4 +1,4 @@
-package categories
+package category
 
 import (
 	"bufio"
@@ -11,14 +11,14 @@ import (
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 )
 
-type category struct {
+type Data struct {
 	File string
 	Name string
-	Applications []application.Launcher
+	Applications []application.Data
 }
 
 var (
-	List = []category{}
+	List = []Data{}
 	Names = []string{}
 	Files = []string{}
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
@@ -54,7 +54,7 @@ func UpdateNames() {
 
 // Populate the List of categories
 func Populate() {
-	var files []application.Launcher
+	var files []application.Data
 
 	// Create the categories directory if it's missing
 	createCatDirWhenMissing()
@@ -63,16 +63,16 @@ func Populate() {
 	catNameRegex := regexp.MustCompile("(?i)(.*)\\.category")
 
 	// Initialize the List with all the applications in uncategorized
-	List = []category{ { File: "", Name: "Uncategorized", Applications: []application.Launcher{} } }
+	List = []Data{ { File: "", Name: "Uncategorized", Applications: []application.Data{} } }
 
 	// Store the application file names and List so we can track and populate uncategorized items
 	appFiles := application.Files
 	appList := application.List
 
 	// Read the files in the categories directory
-	categoryFiles, _ := os.ReadDir(categoriesDirectory)
+	catFiles, _ := os.ReadDir(categoriesDirectory)
 
-	for _, catFile := range categoryFiles {
+	for _, catFile := range catFiles {
 		if catNameRegex.MatchString(catFile.Name()) {
 			files = nil
 			catNameMatchReference := catNameRegex.FindStringSubmatch(catFile.Name())
@@ -104,7 +104,7 @@ func Populate() {
 				return strings.ToLower(files[x].Name) < strings.ToLower(files[y].Name)
 			})
 
-			List = append(List, category{
+			List = append(List, Data{
 				File: catFile.Name(),
 				Name: catNameMatchReference[1],
 				Applications: files,

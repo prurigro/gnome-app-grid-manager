@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/categories"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/ui"
 )
@@ -12,16 +12,16 @@ var (
 	mainMenu = []string{"Categorize Applications", "Quit"}
 )
 
-func manageCategories() {
+func categorizeApplications() {
 	var (
 		catIndex int = 0
 		newCatIndex int = 0
 		appIndex int = 0
-		appLauncher application.Launcher
+		appItem application.Data
 	)
 
 	for {
-		uiResponse = ui.LoadList("Select a category to edit", categories.Names, catIndex);
+		uiResponse = ui.LoadList("Select a category to edit", category.Names, catIndex);
 		catIndex = uiResponse
 
 		if uiResponse == -1 || uiResponse == -2 {
@@ -29,11 +29,11 @@ func manageCategories() {
 		}
 
 		catIndex := uiResponse
-		category := categories.List[catIndex]
+		catItem := category.List[catIndex]
 		appIndex = 0
 
 		for {
-			uiResponse = ui.LoadList("Select an application to categorize", application.GetNames(category.Applications), appIndex)
+			uiResponse = ui.LoadList("Select an application to categorize", application.GetNames(catItem.Applications), appIndex)
 
 			if uiResponse == -1 {
 				return
@@ -41,8 +41,8 @@ func manageCategories() {
 				break
 			} else {
 				appIndex = uiResponse
-				appLauncher = category.Applications[appIndex]
-				uiResponse = ui.LoadList("Select a new category for " + appLauncher.Name, categories.Names, catIndex);
+				appItem = catItem.Applications[appIndex]
+				uiResponse = ui.LoadList("Select a new category for " + appItem.Name, category.Names, catIndex);
 
 				if uiResponse == -1 {
 					return
@@ -61,7 +61,7 @@ func main() {
 
 		switch uiResponse {
 			case 0:
-				manageCategories()
+				categorizeApplications()
 		}
 	}
 

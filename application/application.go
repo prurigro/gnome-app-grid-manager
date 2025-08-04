@@ -10,13 +10,13 @@ import (
 	"strings"
 )
 
-type Launcher struct {
+type Data struct {
 	File string
 	Name string
 }
 
 var (
-	List = []Launcher{}
+	List = []Data{}
 	Files = []string{}
 	Names = []string{}
 	FileMatchRegex = regexp.MustCompile("(?i) *(.*)\\.desktop *$")
@@ -108,7 +108,7 @@ func addDirectoryDesktopFiles(dir string) {
 			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
 			if displayed {
-				List = append(List, Launcher{ Name: appName, File: item.Name() })
+				List = append(List, Data{ Name: appName, File: item.Name() })
 				displayFiles = append(displayFiles, item.Name())
 			} else {
 				noDisplayFiles = append(noDisplayFiles, item.Name())
@@ -117,29 +117,29 @@ func addDirectoryDesktopFiles(dir string) {
 	}
 }
 
-// Returns an array of file names from a list of launchers
-func GetFiles(launchers []Launcher) []string {
+// Returns an array of file names from a list of applications
+func GetFiles(apps []Data) []string {
 	var files []string
 
-	for _, item := range launchers {
+	for _, item := range apps {
 		files = append(files, item.File)
 	}
 
 	return files
 }
 
-// Returns an array of app names from a list of launchers
-func GetNames(launchers []Launcher) []string {
+// Returns an array of app names from a list of applications
+func GetNames(apps []Data) []string {
 	var names []string
 
-	for _, item := range launchers {
+	for _, item := range apps {
 		names = append(names, item.Name + " \033[90m" + item.File + "\033[0m")
 	}
 
 	return names
 }
 
-// Updates the list of all launcher file names
+// Updates the list of all application file
 func UpdateFiles() {
 	Files = GetFiles(List)
 }
