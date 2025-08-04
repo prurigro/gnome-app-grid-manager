@@ -24,6 +24,7 @@ var (
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
 )
 
+// Creates the categoriesDirectory if it doesn't already exist
 func createCatDirWhenMissing() {
 	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
 		os.MkdirAll(categoriesDirectory, 0755)

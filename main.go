@@ -12,6 +12,7 @@ var (
 	mainMenu = []string{"Categorize Applications", "Quit"}
 )
 
+// Interactive application categorization
 func categorizeApplications() {
 	var (
 		catIndex int = 0
