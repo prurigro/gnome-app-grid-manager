@@ -1,4 +1,4 @@
-package xdg
+package application
 
 import (
 	"bufio"
@@ -11,21 +11,21 @@ import (
 )
 
 type Launcher struct {
-	AppName string
-	FileName string
+	File string
+	Name string
 }
 
 var (
 	List = []Launcher{}
-	FileNames = []string{}
-	AppNames = []string{}
+	Files = []string{}
+	Names = []string{}
 	FileMatchRegex = regexp.MustCompile("(?i) *(.*)\\.desktop *$")
 	displayFiles = []string{}
 	noDisplayFiles = []string{}
 )
 
 // Takes an xdg data folder and appends /applications without adding two slashes
-func xdgToApplications(dir string) string {
+func xdgDataToApplications(dir string) string {
 	// Add a slash to the end if one doesn't already exist
 	if dir[len(dir)-1:] != "/" {
 		dir = dir + "/"
@@ -42,7 +42,7 @@ func getDesktopFileDirectories() []string {
 	var desktopDirs []string
 
 	// Add the user's applications directory if it exists
-	homeDesktopDir := xdgToApplications(os.Getenv("XDG_DATA_HOME"))
+	homeDesktopDir := xdgDataToApplications(os.Getenv("XDG_DATA_HOME"))
 
 	if stat, err := os.Stat(homeDesktopDir); err == nil && stat.IsDir() {
 		desktopDirs = append(desktopDirs, homeDesktopDir)
@@ -50,7 +50,7 @@ func getDesktopFileDirectories() []string {
 
 	// Add the other applications directories based on XDG_DATA_DIRS if they exist
 	for _, dir := range strings.Split(os.Getenv("XDG_DATA_DIRS"), ":") {
-		dir = xdgToApplications(dir)
+		dir = xdgDataToApplications(dir)
 
 		if stat, err := os.Stat(dir); err == nil && stat.IsDir() {
 			desktopDirs = append(desktopDirs, dir)
@@ -61,24 +61,24 @@ func getDesktopFileDirectories() []string {
 }
 
 // Checks to see if a .desktop file is configured with NoDisplay=true, Hidden=true or NotShowIn=gnome
-func getDesktopFileMeta(dir string, filename string) (string, bool) {
+func getDesktopFileMeta(dir string, file string) (string, bool) {
 	var (
-		filePath string = dir + "/" + filename
+		filePath string = dir + "/" + file
 		display bool = true
 		name string = ""
 	)
 
-	file, err := os.Open(filePath)
+	fileData, err := os.Open(filePath)
 
 	if err != nil {
 		log.Fatal("Unable to open the file " + filePath)
 	}
 
-	defer file.Close()
+	defer fileData.Close()
 
 	nameMatchRegex := regexp.MustCompile("(?i)^ *name *= *(.*) *$")
 	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)^ *(nodisplay|hidden|notshowin) *= *(true|gnome)")
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(fileData)
 
 	for scanner.Scan() {
 		if name == "" && nameMatchRegex.MatchString(scanner.Text()) {
@@ -91,7 +91,7 @@ func getDesktopFileMeta(dir string, filename string) (string, bool) {
 	}
 
 	if (name == "") {
-		name = filename
+		name = file
 	}
 
 	return name, display
@@ -108,7 +108,7 @@ func addDirectoryDesktopFiles(dir string) {
 			appName, displayed := getDesktopFileMeta(dir, item.Name())
 
 			if displayed {
-				List = append(List, Launcher{ AppName: appName, FileName: item.Name() })
+				List = append(List, Launcher{ Name: appName, File: item.Name() })
 				displayFiles = append(displayFiles, item.Name())
 			} else {
 				noDisplayFiles = append(noDisplayFiles, item.Name())
@@ -118,39 +118,40 @@ func addDirectoryDesktopFiles(dir string) {
 }
 
 // Returns an array of file names from a list of launchers
-func GetFileNames(launchers []Launcher) []string {
-	var fileNames []string
+func GetFiles(launchers []Launcher) []string {
+	var files []string
 
 	for _, item := range launchers {
-		fileNames = append(fileNames, item.FileName)
+		files = append(files, item.File)
 	}
 
-	return fileNames
+	return files
 }
 
 // Returns an array of app names from a list of launchers
-func GetAppNames(launchers []Launcher) []string {
-	var appNames []string
+func GetNames(launchers []Launcher) []string {
+	var names []string
 
 	for _, item := range launchers {
-		appNames = append(appNames, item.AppName)
+		names = append(names, item.Name + " \033[90m" + item.File + "\033[0m")
 	}
 
-	return appNames
+	return names
 }
 
-// Updates the list of all file names
-func UpdateFileNames() {
-	FileNames = GetFileNames(List)
+// Updates the list of all launcher file names
+func UpdateFiles() {
+	Files = GetFiles(List)
 }
 
-// Updates the list of all app names
-func UpdateAppNames() {
-	AppNames = GetAppNames(List)
+// Updates the list of all application names
+func UpdateNames() {
+	Names = GetNames(List)
 }
 
-// Populate the List of xdg launchers
+// Populate the List of applications
 func Populate() {
+	// Reset the list of applications
 	List = nil
 
 	// Loop through xdg desktop directories in order of priority and populate the List array
@@ -160,11 +161,11 @@ func Populate() {
 
 	// Sort alphabetically (case insensitive)
 	sort.Slice(List, func(x, y int) bool {
-		return strings.ToLower(List[x].AppName) < strings.ToLower(List[y].AppName)
+		return strings.ToLower(List[x].Name) < strings.ToLower(List[y].Name)
 	})
 
-	UpdateFileNames()
-	UpdateAppNames()
+	UpdateFiles()
+	UpdateNames()
 }
 
 func init() {

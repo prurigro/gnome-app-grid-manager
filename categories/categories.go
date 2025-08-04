@@ -8,19 +8,19 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/xdg"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 )
 
 type category struct {
 	File string
 	Name string
-	Applications []xdg.Launcher
+	Applications []application.Launcher
 }
 
 var (
 	List = []category{}
-	CatNames = []string{}
-	FileNames = []string{}
+	Names = []string{}
+	Files = []string{}
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
 )
 
@@ -31,30 +31,30 @@ func createCatDirWhenMissing() {
 }
 
 // Updates the list of all file names
-func UpdateFileNames() {
-	var newFileNames []string
+func UpdateFiles() {
+	var newFiles []string
 
 	for _, item := range List {
-		newFileNames = append(newFileNames, item.File)
+		newFiles = append(newFiles, item.File)
 	}
 
-	FileNames = newFileNames
+	Files = newFiles
 }
 
 // Updates the list of all category names
-func UpdateCatNames() {
-	var newCatNames []string
+func UpdateNames() {
+	var newNames []string
 
 	for _, item := range List {
-		newCatNames = append(newCatNames, item.Name)
+		newNames = append(newNames, item.Name)
 	}
 
-	CatNames = newCatNames
+	Names = newNames
 }
 
 // Populate the List of categories
 func Populate() {
-	var files []xdg.Launcher
+	var files []application.Launcher
 
 	// Create the categories directory if it's missing
 	createCatDirWhenMissing()
@@ -63,11 +63,11 @@ func Populate() {
 	catNameRegex := regexp.MustCompile("(?i)(.*)\\.category")
 
 	// Initialize the List with all the applications in uncategorized
-	List = []category{ { File: "", Name: "Uncategorized", Applications: []xdg.Launcher{} } }
+	List = []category{ { File: "", Name: "Uncategorized", Applications: []application.Launcher{} } }
 
-	// Store the xdg filesnames and List so we can track and populate uncategorized items
-	xdgFileNames := xdg.FileNames
-	xdgList := xdg.List
+	// Store the application file names and List so we can track and populate uncategorized items
+	appFiles := application.Files
+	appList := application.List
 
 	// Read the files in the categories directory
 	categoryFiles, _ := os.ReadDir(categoriesDirectory)
@@ -87,21 +87,21 @@ func Populate() {
 			scanner := bufio.NewScanner(file)
 
 			for scanner.Scan() {
-				if xdg.FileMatchRegex.MatchString(scanner.Text()) {
-					filename := xdg.FileMatchRegex.FindStringSubmatch(scanner.Text())[0]
+				if application.FileMatchRegex.MatchString(scanner.Text()) {
+					appFile := application.FileMatchRegex.FindStringSubmatch(scanner.Text())[0]
 
-					if (slices.Contains(xdgFileNames, filename)) {
-						index := slices.Index(xdgFileNames, filename)
-						files = append(files, xdgList[index])
-						_ = slices.Delete(xdgFileNames, index, index + 1)
-						_ = slices.Delete(xdgList, index, index + 1)
+					if (slices.Contains(appFiles, appFile)) {
+						index := slices.Index(appFiles, appFile)
+						files = append(files, appList[index])
+						_ = slices.Delete(appFiles, index, index + 1)
+						_ = slices.Delete(appList, index, index + 1)
 					}
 				}
 			}
 
 			// Sort alphabetically (case insensitive)
 			sort.Slice(files, func(x, y int) bool {
-				return strings.ToLower(files[x].AppName) < strings.ToLower(files[y].AppName)
+				return strings.ToLower(files[x].Name) < strings.ToLower(files[y].Name)
 			})
 
 			List = append(List, category{
@@ -112,9 +112,9 @@ func Populate() {
 		}
 	}
 
-	// Populate the uncategorized list using the items remaining in the xdgList
-	for _, item := range xdgList {
-		if item.FileName != "" {
+	// Populate the uncategorized list using the items remaining in the appList
+	for _, item := range appList {
+		if item.File != "" {
 			List[0].Applications = append(List[0].Applications, item)
 		}
 	}
@@ -124,8 +124,8 @@ func Populate() {
 		return strings.ToLower(List[x].File) < strings.ToLower(List[y].File)
 	})
 
-	UpdateFileNames()
-	UpdateCatNames()
+	UpdateFiles()
+	UpdateNames()
 }
 
 func init() {
