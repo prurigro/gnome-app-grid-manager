@@ -49,7 +49,7 @@ func categorizeApplications() {
 					return
 				} else if uiResponse != -2 {
 					newCatIndex = uiResponse
-					fmt.Println(newCatIndex)
+					category.ChangeAppCategory(appItem, catIndex, newCatIndex)
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package category
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -29,6 +30,12 @@ func createCatDirWhenMissing() {
 	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
 		os.MkdirAll(categoriesDirectory, 0755)
 	}
+}
+
+// Move an application from one category to another
+func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex int) {
+	fmt.Println("Moving " + appItem.Name + " from " + List[oldCatIndex].Name + " to " + List[newCatIndex].Name)
+	os.Exit(0)
 }
 
 // Updates the list of all file names
