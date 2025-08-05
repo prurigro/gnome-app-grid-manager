@@ -41,7 +41,7 @@ func manageCategories() {
 			}
 
 			appIndex = uiResponse
-			uiResponse = ui.List("Select a new " + color.Add("red", "category") + " for " + color.Add("yellow", category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), catIndex);
+			uiResponse = ui.List("Select a new " + color.Add("red", "category") + " for " + color.Add("yellow", category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
 
 			if uiResponse == -1 {
 				return
@@ -55,7 +55,16 @@ func manageCategories() {
 
 func createCategory() {
 	newCategory := ui.Input("Enter a new category name")
-	ui.MessageWait("Your new category is " + newCategory)
+
+	if newCategory != "" {
+		status, err := category.Create(newCategory)
+
+		if status {
+			ui.MessageWait("Successfully created " + color.Add("red", newCategory))
+		} else {
+			ui.MessageWait(err)
+		}
+	}
 }
 
 func deleteCategory() {
@@ -85,8 +94,11 @@ func deleteCategory() {
 }
 
 func main() {
+	var menuIndex = 0
+
 	for uiResponse != -1 && uiResponse != len(mainMenu) - 1 {
-		uiResponse = ui.List(color.Add("yellow", "Main Menu"), mainMenu, 0);
+		uiResponse = ui.List(color.Add("yellow", "Main Menu"), mainMenu, menuIndex);
+		menuIndex = uiResponse
 
 		switch uiResponse {
 			case 0:
