@@ -102,6 +102,19 @@ func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex in
 	addApplication(appItem, newCatIndex)
 }
 
+// Retrieve the list of categories without uncategorized
+func GetListWithoutUncategorized() ([]Data) {
+	var listWithoutUncategorized []Data
+
+	for _, item := range List {
+		if item.File != "" {
+			listWithoutUncategorized = append(listWithoutUncategorized, item)
+		}
+	}
+
+	return listWithoutUncategorized
+}
+
 // Updates the list of all file names
 func UpdateFiles() {
 	var newFiles []string
