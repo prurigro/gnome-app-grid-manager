@@ -60,7 +60,7 @@ func createCategory() {
 		status, err := category.Create(newCategory)
 
 		if status {
-			ui.MessageWait("Successfully created " + color.Add("red", newCategory))
+			ui.MessageWait("Successfully created " + color.Add("blue", newCategory))
 		} else {
 			ui.MessageWait(err)
 		}
