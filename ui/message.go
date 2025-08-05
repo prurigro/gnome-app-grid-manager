@@ -7,22 +7,25 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-func Message(message string, waitForEnter bool) {
-	// Display the message
+// Display a message
+func Message(message string) {
 	fmt.Println(lipgloss.NewStyle().PaddingTop(1).PaddingLeft(3).PaddingBottom(1).Render(message))
+}
 
-	if waitForEnter {
-		// Inform the user of what to do next
-		fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
+// Display a message and wait for them to press enter
+func MessageWait(message string) {
+	Message(message)
 
-		// Hide the cursor
-		fmt.Print("\033[?25l")
+	// Inform the user of what to do next
+	fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
 
-		// Show the cursor when this function concludes
-		defer fmt.Print("\033[?25h")
+	// Hide the cursor
+	fmt.Print("\033[?25l")
 
-		// Create a reader and wait for the enter key
-		reader := bufio.NewReader(os.Stdin)
-		reader.ReadString('\n')
-	}
+	// Show the cursor when this function concludes
+	defer fmt.Print("\033[?25h")
+
+	// Create a reader and wait for the enter key
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n')
 }

@@ -54,7 +54,8 @@ func manageCategories() {
 }
 
 func createCategory() {
-
+	newCategory := ui.Input("Enter a new category name")
+	ui.MessageWait("Your new category is " + newCategory)
 }
 
 func deleteCategory() {
@@ -77,7 +78,7 @@ func deleteCategory() {
 			status, err := category.Delete(catNames[catIndex])
 
 			if !status {
-				ui.Message(err, true)
+				ui.MessageWait(err)
 			}
 		}
 	}
@@ -99,5 +100,5 @@ func main() {
 		}
 	}
 
-	ui.Message("Quitting...", false)
+	ui.Message("Quitting...")
 }
