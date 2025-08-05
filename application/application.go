@@ -70,7 +70,7 @@ func getDesktopFileMeta(dir string, file string) (string, bool) {
 	fileData, err := os.Open(filePath)
 
 	if err != nil {
-		log.Fatal("Unable to open the file " + filePath)
+		log.Fatal("Unable to open the file " + color.Add("red", filePath))
 	}
 
 	defer fileData.Close()
