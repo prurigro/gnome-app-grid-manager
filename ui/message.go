@@ -7,8 +7,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Display a message
+// Clear the terminal and display a message
 func Message(message string) {
+	fmt.Print("\033[H\033[2J")
 	fmt.Println(lipgloss.NewStyle().PaddingTop(1).PaddingLeft(3).PaddingBottom(1).Render(message))
 }
 
