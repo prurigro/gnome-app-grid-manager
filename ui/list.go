@@ -12,34 +12,34 @@ import (
 )
 
 // Selected value
-var selectedValue int = -1
+var listSelectedValue int = -1
 
 // Style
 var (
-	titleStyle        = lipgloss.NewStyle().MarginLeft(1)
-	noItemsStyle      = lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8"))
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(3)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("12"))
-	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(3)
-	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(3).PaddingBottom(1)
-	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 2)
+	listTitleStyle        = lipgloss.NewStyle().MarginLeft(1)
+	listNoItemsStyle      = lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8"))
+	listItemStyle         = lipgloss.NewStyle().PaddingLeft(3)
+	listSelectedItemStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("12"))
+	listPaginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(3)
+	listHelpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(3).PaddingBottom(1)
+	listQuitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 2)
 )
 
 // Additional keybindings for help
-type keyMap struct {
+type listKeyMap struct {
 	Enter key.Binding
 	Backspace key.Binding
 }
 
-func (k keyMap) AdditionalShortHelp() []key.Binding {
+func (k listKeyMap) AdditionalShortHelp() []key.Binding {
 	return []key.Binding{k.Enter, k.Backspace}
 }
 
-func (k keyMap) AdditionalFullHelp() []key.Binding {
+func (k listKeyMap) AdditionalFullHelp() []key.Binding {
 	return []key.Binding{k.Enter, k.Backspace}
 }
 
-var keys = keyMap{
+var listKeys = listKeyMap{
 	Enter: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "select"),
@@ -51,63 +51,63 @@ var keys = keyMap{
 }
 
 // List item definition
-type item struct {
+type listItem struct {
 	index int
 	value string
 }
 
-func (i item) FilterValue() string {
+func (i listItem) FilterValue() string {
 	return ""
 }
 
 // Array of items
-var items = []list.Item{}
+var listItems = []list.Item{}
 
 // List item format
-type itemDelegate struct{}
+type listItemDelegate struct{}
 
-func (d itemDelegate) Height() int {
+func (d listItemDelegate) Height() int {
 	return 1
 }
 
-func (d itemDelegate) Spacing() int {
+func (d listItemDelegate) Spacing() int {
 	return 0
 }
 
-func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd {
+func (d listItemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd {
 	return nil
 }
 
-func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
-	i, ok := listItem.(item)
+func (d listItemDelegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
+	i, ok := item.(listItem)
 
 	if !ok {
 		return
 	}
 
 	str := fmt.Sprintf("%s", i.value)
-	fn := itemStyle.Render
+	fn := listItemStyle.Render
 
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+			return listSelectedItemStyle.Render("> " + strings.Join(s, " "))
 		}
 	}
 
 	fmt.Fprint(w, fn(str))
 }
 
-type model struct {
-	list     list.Model
-	choice   string
+type listModel struct {
+	list list.Model
+	choice string
 	quitting bool
 }
 
-func (m model) Init() tea.Cmd {
+func (m listModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -122,14 +122,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, tea.Quit
 
 				case "backspace":
-					selectedValue = -2
+					listSelectedValue = -2
 					return m, tea.Quit
 
 				case "enter":
-					i, ok := m.list.SelectedItem().(item)
+					i, ok := m.list.SelectedItem().(listItem)
 
 					if ok {
-						selectedValue = i.index
+						listSelectedValue = i.index
 						m.choice = i.value
 					}
 
@@ -141,7 +141,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
+func (m listModel) View() string {
 	if m.choice != "" {
 		return ""
 	}
@@ -153,33 +153,33 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func List(title string, listItems []string, startingIndex int) (int) {
-	selectedValue = -1
-	items = nil
+func List(title string, items []string, startingIndex int) (int) {
+	listSelectedValue = -1
+	listItems = nil
 
-	for index, value := range listItems {
-		items = append(items, item{index, value})
+	for index, value := range items {
+		listItems = append(listItems, listItem{index, value})
 	}
 
-	l := list.New(items, itemDelegate{}, 1, 1)
+	l := list.New(listItems, listItemDelegate{}, 1, 1)
 	l.Title = title
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.NoItems = noItemsStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
+	l.Styles.Title = listTitleStyle
+	l.Styles.NoItems = listNoItemsStyle
+	l.Styles.PaginationStyle = listPaginationStyle
+	l.Styles.HelpStyle = listHelpStyle
 
-	l.AdditionalShortHelpKeys = keys.AdditionalShortHelp
-	l.AdditionalFullHelpKeys = keys.AdditionalFullHelp
+	l.AdditionalShortHelpKeys = listKeys.AdditionalShortHelp
+	l.AdditionalFullHelpKeys = listKeys.AdditionalFullHelp
 
-	if startingIndex >= len(listItems) - 1 {
-		startingIndex = len(listItems) - 1
+	if startingIndex >= len(items) - 1 {
+		startingIndex = len(items) - 1
 	}
 
 	l.Select(startingIndex)
 
-	m := model{list: l}
+	m := listModel{list: l}
 	_, err := tea.NewProgram(m).Run()
 
 	if err != nil {
@@ -187,5 +187,5 @@ func List(title string, listItems []string, startingIndex int) (int) {
 		os.Exit(1)
 	}
 
-	return selectedValue
+	return listSelectedValue
 }
