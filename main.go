@@ -18,7 +18,6 @@ func categorizeApplications() {
 		catIndex int = 0
 		newCatIndex int = 0
 		appIndex int = 0
-		appItem application.Data
 	)
 
 	for {
@@ -30,11 +29,10 @@ func categorizeApplications() {
 		}
 
 		catIndex := uiResponse
-		catItem := category.List[catIndex]
 		appIndex = 0
 
 		for {
-			uiResponse = ui.LoadList("Select an application to categorize", application.GetNames(catItem.Applications), appIndex)
+			uiResponse = ui.LoadList("Select an application to categorize", application.GetNames(category.List[catIndex].Applications), appIndex)
 
 			if uiResponse == -1 {
 				return
@@ -42,14 +40,13 @@ func categorizeApplications() {
 				break
 			} else {
 				appIndex = uiResponse
-				appItem = catItem.Applications[appIndex]
-				uiResponse = ui.LoadList("Select a new category for " + appItem.Name, category.Names, catIndex);
+				uiResponse = ui.LoadList("Select a new category for " + category.List[catIndex].Applications[appIndex].Name, category.Names, catIndex);
 
 				if uiResponse == -1 {
 					return
 				} else if uiResponse != -2 {
 					newCatIndex = uiResponse
-					category.ChangeAppCategory(appItem, catIndex, newCatIndex)
+					category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
 				}
 			}
 		}

@@ -2,7 +2,6 @@ package category
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -25,17 +24,82 @@ var (
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
 )
 
-// Creates the categoriesDirectory if it doesn't already exist
-func createCatDirWhenMissing() {
-	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
-		os.MkdirAll(categoriesDirectory, 0755)
+// Write a category to file
+func writeCategory(catItem Data) {
+	// Only write if a file exists (ie: don't write uncategorized)
+	if catItem.File != "" {
+		// The full category file path
+		filePath := categoriesDirectory + "/" + catItem.File
+
+		// Create the categories directory if it's missing
+		if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
+			os.MkdirAll(categoriesDirectory, 0755)
+		}
+
+		// Truncate and create the category file
+		file, err := os.Create(filePath)
+
+		// Fail with an error if we can't open the file
+		if  err != nil {
+			log.Fatal("Unable to open the file " + filePath)
+		}
+
+		// Close the file once we're finished here
+		defer file.Close()
+
+		// Write the list of applications to the category file
+		writer := bufio.NewWriter(file)
+
+		// Write the applications
+		for index, appItem := range catItem.Applications {
+			// write the application filename
+			_, err := writer.WriteString(appItem.File)
+
+			if err != nil {
+				panic(err)
+			}
+
+			// Add a line break if this wasn't the last file
+			if index < len(catItem.Applications) - 1 {
+				_, err := writer.WriteString("\n")
+
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+
+		if err := writer.Flush(); err != nil {
+			log.Fatal("Unable to write to the file " + filePath)
+		}
 	}
+}
+
+// Remove an application from a category
+func removeApplication(appItem application.Data, catIndex int) {
+	var newApplications = []application.Data{}
+
+	for _, item := range List[catIndex].Applications {
+		if item.File != appItem.File || item.Name != appItem.Name {
+			newApplications = append(newApplications, item)
+		}
+	}
+
+	List[catIndex].Applications = newApplications
+	writeCategory(List[catIndex])
+}
+
+// Add an application to a category
+func addApplication(appItem application.Data, catIndex int) {
+	List[catIndex].Applications = append(List[catIndex].Applications, appItem)
+	application.Sort(&List[catIndex].Applications)
+	writeCategory(List[catIndex])
 }
 
 // Move an application from one category to another
 func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex int) {
-	fmt.Println("Moving " + appItem.Name + " from " + List[oldCatIndex].Name + " to " + List[newCatIndex].Name)
-	os.Exit(0)
+	removeApplication(appItem, oldCatIndex)
+	addApplication(appItem, newCatIndex)
 }
 
 // Updates the list of all file names
@@ -64,9 +128,6 @@ func UpdateNames() {
 func Populate() {
 	var files []application.Data
 
-	// Create the categories directory if it's missing
-	createCatDirWhenMissing()
-
 	// Regex to pull just the name out of the category file
 	catNameRegex := regexp.MustCompile("(?i)(.*)\\.category")
 
@@ -77,46 +138,62 @@ func Populate() {
 	appFiles := application.Files
 	appList := application.List
 
-	// Read the files in the categories directory
+	// The set of files in categoriesDirectory
 	catFiles, _ := os.ReadDir(categoriesDirectory)
 
-	for _, catFile := range catFiles {
-		if catNameRegex.MatchString(catFile.Name()) {
-			files = nil
-			catNameMatchReference := catNameRegex.FindStringSubmatch(catFile.Name())
-			filePath := categoriesDirectory + "/" + catFile.Name()
-			file, err := os.Open(filePath)
+	// Loop through each file in categoriesDirectory if it exists
+	if stat, err := os.Stat(categoriesDirectory); err == nil && stat.IsDir() {
+		for _, catFile := range catFiles {
+			// Only open .category files
+			if catNameRegex.MatchString(catFile.Name()) {
+				// Empty out the files array so we can start adding a fresh set from the latest category
+				files = nil
 
-			if err != nil {
-				log.Fatal("Unable to open the file " + filePath)
-			}
+				// Match the category file name so we can pull the category name out from it later
+				catNameMatchReference := catNameRegex.FindStringSubmatch(catFile.Name())
 
-			// Read the category file and build the list of applications for that category
-			scanner := bufio.NewScanner(file)
+				// Get the full path of the file
+				filePath := categoriesDirectory + "/" + catFile.Name()
 
-			for scanner.Scan() {
-				if application.FileMatchRegex.MatchString(scanner.Text()) {
-					appFile := application.FileMatchRegex.FindStringSubmatch(scanner.Text())[0]
+				// Open the file
+				file, err := os.Open(filePath)
 
-					if (slices.Contains(appFiles, appFile)) {
-						index := slices.Index(appFiles, appFile)
-						files = append(files, appList[index])
-						_ = slices.Delete(appFiles, index, index + 1)
-						_ = slices.Delete(appList, index, index + 1)
+				// Fail with an error if we can't open the file
+				if err != nil {
+					log.Fatal("Unable to open the file " + filePath)
+				}
+
+				// Read the category file and build the list of applications for that category
+				scanner := bufio.NewScanner(file)
+
+				for scanner.Scan() {
+					if application.FileMatchRegex.MatchString(scanner.Text()) {
+						appFile := application.FileMatchRegex.FindStringSubmatch(scanner.Text())[0]
+
+						if (slices.Contains(appFiles, appFile)) {
+							index := slices.Index(appFiles, appFile)
+							files = append(files, appList[index])
+							_ = slices.Delete(appFiles, index, index + 1)
+							_ = slices.Delete(appList, index, index + 1)
+						}
 					}
 				}
+
+				// Close the file
+				file.Close()
+
+				// Sort alphabetically (case insensitive)
+				sort.Slice(files, func(x, y int) bool {
+					return strings.ToLower(files[x].Name) < strings.ToLower(files[y].Name)
+				})
+
+				// Add the category to List
+				List = append(List, Data{
+					File: catFile.Name(),
+					Name: catNameMatchReference[1],
+					Applications: files,
+				})
 			}
-
-			// Sort alphabetically (case insensitive)
-			sort.Slice(files, func(x, y int) bool {
-				return strings.ToLower(files[x].Name) < strings.ToLower(files[y].Name)
-			})
-
-			List = append(List, Data{
-				File: catFile.Name(),
-				Name: catNameMatchReference[1],
-				Applications: files,
-			})
 		}
 	}
 

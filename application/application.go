@@ -149,6 +149,13 @@ func UpdateNames() {
 	Names = GetNames(List)
 }
 
+// Sort a list of applications
+func Sort(l *[]Data) {
+	sort.Slice(*l, func(x, y int) bool {
+		return strings.ToLower((*l)[x].Name) < strings.ToLower((*l)[y].Name)
+	})
+}
+
 // Populate the List of applications
 func Populate() {
 	// Reset the list of applications
@@ -160,10 +167,9 @@ func Populate() {
 	}
 
 	// Sort alphabetically (case insensitive)
-	sort.Slice(List, func(x, y int) bool {
-		return strings.ToLower(List[x].Name) < strings.ToLower(List[y].Name)
-	})
+	Sort(&List)
 
+	// Update the full list of files and names
 	UpdateFiles()
 	UpdateNames()
 }
