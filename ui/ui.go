@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -17,6 +18,7 @@ var selectedValue int = -1
 // Style
 var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(1)
+	noItemsStyle      = lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8"))
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(3)
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("12"))
 	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(3)
@@ -152,7 +154,7 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func LoadList(title string, listItems []string, startingIndex int) (int) {
+func List(title string, listItems []string, startingIndex int) (int) {
 	selectedValue = -1
 	items = nil
 
@@ -165,6 +167,7 @@ func LoadList(title string, listItems []string, startingIndex int) (int) {
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
+	l.Styles.NoItems = noItemsStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
@@ -186,4 +189,24 @@ func LoadList(title string, listItems []string, startingIndex int) (int) {
 	}
 
 	return selectedValue
+}
+
+func Message(message string, waitForEnter bool) {
+	// Display the message
+	fmt.Println(lipgloss.NewStyle().PaddingTop(1).PaddingLeft(3).PaddingBottom(1).Render(message))
+
+	if waitForEnter {
+		// Inform the user of what to do next
+		fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
+
+		// Hide the cursor
+		fmt.Print("\033[?25l")
+
+		// Show the cursor when this function concludes
+		defer fmt.Print("\033[?25h")
+
+		// Create a reader and wait for the enter key
+		reader := bufio.NewReader(os.Stdin)
+		reader.ReadString('\n')
+	}
 }

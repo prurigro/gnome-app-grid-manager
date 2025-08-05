@@ -8,6 +8,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
 )
 
 type Data struct {
@@ -17,8 +18,6 @@ type Data struct {
 
 var (
 	List = []Data{}
-	Files = []string{}
-	Names = []string{}
 	FileMatchRegex = regexp.MustCompile("(?i) *(.*)\\.desktop *$")
 	displayFiles = []string{}
 	noDisplayFiles = []string{}
@@ -133,20 +132,10 @@ func GetNames(apps []Data) []string {
 	var names []string
 
 	for _, item := range apps {
-		names = append(names, item.Name + " \033[90m" + item.File + "\033[0m")
+		names = append(names, item.Name + " " + color.Add("grey", item.File))
 	}
 
 	return names
-}
-
-// Updates the list of all application file
-func UpdateFiles() {
-	Files = GetFiles(List)
-}
-
-// Updates the list of all application names
-func UpdateNames() {
-	Names = GetNames(List)
 }
 
 // Sort a list of applications
@@ -168,10 +157,6 @@ func Populate() {
 
 	// Sort alphabetically (case insensitive)
 	Sort(&List)
-
-	// Update the full list of files and names
-	UpdateFiles()
-	UpdateNames()
 }
 
 func init() {

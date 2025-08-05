@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
 )
 
 type Data struct {
@@ -19,8 +20,6 @@ type Data struct {
 
 var (
 	List = []Data{}
-	Names = []string{}
-	Files = []string{}
 	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
 )
 
@@ -102,6 +101,58 @@ func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex in
 	addApplication(appItem, newCatIndex)
 }
 
+// Create a category
+func Create(name string) (bool, string) {
+	fileName := name + ".category"
+	filePath := categoriesDirectory + "/" + fileName
+
+	// Complain if the category already exists
+	if slices.Contains(GetFiles(GetListWithoutUncategorized()), fileName) {
+		return false, "The category " + color.Add("red", name) + " already exists"
+	}
+
+	// Create the category file if it doesn't exist (otherwise our job here is already done)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		// Create the category file and complain if it fails
+		file, err := os.Create(filePath)
+
+		if err != nil {
+			return false, "The file " + color.Add("red", fileName) + " could not be created"
+		}
+
+		// Close the file
+		file.Close()
+	}
+
+	// Re-populate List
+	Populate()
+
+	// Return successfully
+	return true, ""
+}
+
+// Delete a category
+func Delete(name string) (bool, string) {
+	fileName := name + ".category"
+	filePath := categoriesDirectory + "/" + fileName
+
+	// Delete the category file if it exists (otherwise our job here is already done)
+	if _, err := os.Stat(filePath); err == nil || !os.IsNotExist(err) {
+		// Delete the category file and complain if it fails
+		err := os.Remove(filePath)
+
+		if err != nil {
+			return false, "The file " + color.Add("red", fileName) + " could not be deleted"
+		}
+	}
+
+	// Re-populate List
+	Populate()
+
+	// Return successfully
+	return true, ""
+}
+
 // Retrieve the list of categories without uncategorized
 func GetListWithoutUncategorized() ([]Data) {
 	var listWithoutUncategorized []Data
@@ -115,26 +166,26 @@ func GetListWithoutUncategorized() ([]Data) {
 	return listWithoutUncategorized
 }
 
-// Updates the list of all file names
-func UpdateFiles() {
-	var newFiles []string
+// Returns an array of file names from a list of categories
+func GetFiles(categories []Data) []string {
+	var files []string
 
-	for _, item := range List {
-		newFiles = append(newFiles, item.File)
+	for _, item := range categories {
+		files = append(files, item.File)
 	}
 
-	Files = newFiles
+	return files
 }
 
-// Updates the list of all category names
-func UpdateNames() {
-	var newNames []string
+// Returns an array of app names from a list of categories
+func GetNames(categories []Data) []string {
+	var names []string
 
-	for _, item := range List {
-		newNames = append(newNames, item.Name)
+	for _, item := range categories {
+		names = append(names, item.Name)
 	}
 
-	Names = newNames
+	return names
 }
 
 // Populate the List of categories
@@ -148,7 +199,7 @@ func Populate() {
 	List = []Data{ { File: "", Name: "Uncategorized", Applications: []application.Data{} } }
 
 	// Store the application file names and List so we can track and populate uncategorized items
-	appFiles := application.Files
+	appFiles := application.GetFiles(application.List)
 	appList := application.List
 
 	// The set of files in categoriesDirectory
@@ -221,9 +272,6 @@ func Populate() {
 	sort.Slice(List, func(x, y int) bool {
 		return strings.ToLower(List[x].File) < strings.ToLower(List[y].File)
 	})
-
-	UpdateFiles()
-	UpdateNames()
 }
 
 func init() {

@@ -1,19 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/ui"
 )
 
 var (
 	uiResponse int // -1 is quit, -2 is back
-	mainMenu = []string{"Categorize Applications", "Quit"}
+	mainMenu = []string{"Manage Categories", "Create Category", "Delete Category", "Quit"}
+	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
 // Interactive application categorization
-func categorizeApplications() {
+func manageCategories() {
 	var (
 		catIndex int = 0
 		newCatIndex int = 0
@@ -21,33 +22,62 @@ func categorizeApplications() {
 	)
 
 	for {
-		uiResponse = ui.LoadList("Select a category to edit", category.Names, catIndex);
-		catIndex = uiResponse
+		uiResponse = ui.List("Select a " + color.Add("red", "category") + " to edit its " + color.Add("yellow", "applications"), category.GetNames(category.List), catIndex);
 
 		if uiResponse == -1 || uiResponse == -2 {
 			return
 		}
 
-		catIndex := uiResponse
+		catIndex = uiResponse
 		appIndex = 0
 
 		for {
-			uiResponse = ui.LoadList("Select an application to categorize", application.GetNames(category.List[catIndex].Applications), appIndex)
+			uiResponse = ui.List("Select an " + color.Add("red", "application") + " to change its " + color.Add("yellow", "category"), application.GetNames(category.List[catIndex].Applications), appIndex)
 
 			if uiResponse == -1 {
 				return
 			} else if uiResponse == -2 {
 				break
-			} else {
-				appIndex = uiResponse
-				uiResponse = ui.LoadList("Select a new category for " + category.List[catIndex].Applications[appIndex].Name, category.Names, catIndex);
+			}
 
-				if uiResponse == -1 {
-					return
-				} else if uiResponse != -2 {
-					newCatIndex = uiResponse
-					category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
-				}
+			appIndex = uiResponse
+			uiResponse = ui.List("Select a new " + color.Add("red", "category") + " for " + color.Add("yellow", category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), catIndex);
+
+			if uiResponse == -1 {
+				return
+			} else if uiResponse != -2 {
+				newCatIndex = uiResponse
+				category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
+			}
+		}
+	}
+}
+
+func createCategory() {
+
+}
+
+func deleteCategory() {
+	var catIndex int = 0
+
+	for {
+		catNames := category.GetNames(category.GetListWithoutUncategorized())
+		uiResponse = ui.List("Select a " + color.Add("red", "category") + " to " + color.Add("yellow", "delete"), catNames, catIndex);
+
+		if uiResponse == -1 || uiResponse == -2 {
+			return
+		}
+
+		catIndex = uiResponse
+		uiResponse = ui.List(color.Add("red", "Delete") + " the category " + color.Add("yellow", catNames[catIndex]) + "?", okCancelOptions, 0)
+
+		if uiResponse == -1 {
+			return
+		} else if uiResponse != -2 && uiResponse != 1 {
+			status, err := category.Delete(catNames[catIndex])
+
+			if !status {
+				ui.Message(err, true)
 			}
 		}
 	}
@@ -55,13 +85,19 @@ func categorizeApplications() {
 
 func main() {
 	for uiResponse != -1 && uiResponse != len(mainMenu) - 1 {
-		uiResponse = ui.LoadList("Main Menu", mainMenu, 0);
+		uiResponse = ui.List(color.Add("yellow", "Main Menu"), mainMenu, 0);
 
 		switch uiResponse {
 			case 0:
-				categorizeApplications()
+				manageCategories()
+
+			case 1:
+				createCategory()
+
+			case 2:
+				deleteCategory()
 		}
 	}
 
-	fmt.Println("Quitting...")
+	ui.Message("Quitting...", false)
 }
