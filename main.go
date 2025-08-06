@@ -124,8 +124,13 @@ type User struct {
 func main() {
 	var menuIndex = 0
 
-	for uiResponse != -1 && uiResponse != len(mainMenu) - 1 {
+	for {
 		uiResponse = ui.List(color.Add("yellow", "Main Menu"), mainMenu, menuIndex);
+
+		if uiResponse == -1 || uiResponse == -2 || uiResponse == len(mainMenu) - 1 {
+			break
+		}
+
 		menuIndex = uiResponse
 
 		switch uiResponse {
