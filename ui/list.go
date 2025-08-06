@@ -175,6 +175,8 @@ func List(title string, items []string, startingIndex int) (int) {
 
 	if startingIndex >= len(items) - 1 {
 		startingIndex = len(items) - 1
+	} else if startingIndex < 0 {
+		startingIndex = 0
 	}
 
 	l.Select(startingIndex)
