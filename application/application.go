@@ -38,10 +38,20 @@ func xdgDataToApplications(dir string) string {
 
 // Returns the existing directories that contain xdg desktop files
 func getDesktopFileDirectories() []string {
-	var desktopDirs []string
+	var (
+		desktopDirs []string
+		xdgDataHome string
+	)
+
+	// Use the configured XDG_DATA_HOME or fall back on the default
+	if os.Getenv("XDG_DATA_HOME") != "" {
+		xdgDataHome = os.Getenv("XDG_DATA_HOME")
+	} else {
+		xdgDataHome = os.Getenv("HOME") + "/.local/share"
+	}
 
 	// Add the user's applications directory if it exists
-	homeDesktopDir := xdgDataToApplications(os.Getenv("XDG_DATA_HOME"))
+	homeDesktopDir := xdgDataToApplications(xdgDataHome)
 
 	if stat, err := os.Stat(homeDesktopDir); err == nil && stat.IsDir() {
 		desktopDirs = append(desktopDirs, homeDesktopDir)
