@@ -15,6 +15,16 @@ var (
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
+// Checks if at least one category folder exists and informs the user if they don't
+func catFoldersExist() bool {
+	if len(category.List) < 2 {
+		ui.MessageWait("No category folders currently exist")
+		return false
+	}
+
+	return true
+}
+
 // Application category management
 func manageApplicationCategories() {
 	var (
@@ -22,6 +32,10 @@ func manageApplicationCategories() {
 		newCatIndex int = 0
 		appIndex int = 0
 	)
+
+	if !catFoldersExist() {
+		return
+	}
 
 	for {
 		uiResponse = ui.List("Select a " + color.Add("red", "category folder") + " to edit its " + color.Add("yellow", "applications"), category.GetNames(category.List), catIndex);
@@ -74,6 +88,10 @@ func createCategoryFolder() {
 func deleteCategoryFolder() {
 	var catIndex int = 0
 
+	if !catFoldersExist() {
+		return
+	}
+
 	for {
 		catNames := category.GetNames(category.GetListWithoutUncategorized())
 		uiResponse = ui.List("Select a " + color.Add("red", "category folder") + " to " + color.Add("yellow", "delete"), catNames, catIndex);
@@ -99,12 +117,20 @@ func deleteCategoryFolder() {
 
 // Clean up category files by re-writing each of them
 func cleanCategoryFiles() {
+	if !catFoldersExist() {
+		return
+	}
+
 	category.CleanFiles()
 	ui.MessageWait("Successfully cleaned category files")
 }
 
 // Apply configured categories to the gnome application list
 func applyGnomeCategoryFolders() {
+	if !catFoldersExist() {
+		return
+	}
+
 	ui.Message("Clearing old category folders...")
 	gnome.ClearCategories()
 	time.Sleep(3 * time.Second)
