@@ -31,11 +31,6 @@ func writeCategory(catItem Data) {
 		// The full category file path
 		filePath := categoriesDirectory + "/" + catItem.File
 
-		// Create the categories directory if it's missing
-		if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
-			os.MkdirAll(categoriesDirectory, 0755)
-		}
-
 		// Truncate and create the category file
 		file, err := os.Create(filePath)
 
@@ -113,6 +108,11 @@ func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex in
 func Create(name string) (bool, string) {
 	fileName := name + ".category"
 	filePath := categoriesDirectory + "/" + fileName
+
+	// Create the categories directory if it doesn't already exist
+	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
+		os.MkdirAll(categoriesDirectory, 0755)
+	}
 
 	// Complain if the category already exists
 	if slices.Contains(GetFiles(GetListWithoutUncategorized()), fileName) {
