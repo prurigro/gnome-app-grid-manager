@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/env"
 )
 
 type Data struct {
@@ -40,25 +41,17 @@ func xdgDataToApplications(dir string) string {
 func getDesktopFileDirectories() []string {
 	var (
 		desktopDirs []string
-		xdgDataHome string
 	)
 
-	// Use the configured XDG_DATA_HOME or fall back on the default
-	if os.Getenv("XDG_DATA_HOME") != "" {
-		xdgDataHome = os.Getenv("XDG_DATA_HOME")
-	} else {
-		xdgDataHome = os.Getenv("HOME") + "/.local/share"
-	}
-
 	// Add the user's applications directory if it exists
-	homeDesktopDir := xdgDataToApplications(xdgDataHome)
+	homeDesktopDir := xdgDataToApplications(env.XdgDataHome)
 
 	if stat, err := os.Stat(homeDesktopDir); err == nil && stat.IsDir() {
 		desktopDirs = append(desktopDirs, homeDesktopDir)
 	}
 
 	// Add the other applications directories based on XDG_DATA_DIRS if they exist
-	for _, dir := range strings.Split(os.Getenv("XDG_DATA_DIRS"), ":") {
+	for _, dir := range strings.Split(env.XdgDataDirs, ":") {
 		dir = xdgDataToApplications(dir)
 
 		if stat, err := os.Stat(dir); err == nil && stat.IsDir() {

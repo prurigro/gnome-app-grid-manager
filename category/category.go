@@ -10,6 +10,7 @@ import (
 	"strings"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/env"
 )
 
 type Data struct {
@@ -20,7 +21,7 @@ type Data struct {
 
 var (
 	List = []Data{}
-	categoriesDirectory = os.Getenv("XDG_DATA_HOME") + "/gnome-shell/categories"
+	categoriesDirectory = env.XdgDataHome + "/gnome-shell/categories"
 )
 
 // Write a category to file
