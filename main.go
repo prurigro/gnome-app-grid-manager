@@ -113,13 +113,6 @@ func clearGnomeCategoryFolders() {
 	ui.MessageWait("Successfully cleared category folders")
 }
 
-
-type User struct {
-    Name string
-    Age int
-    Active bool
-    lastLoginAt string
-}
 // Main menu
 func main() {
 	var menuIndex = 0
