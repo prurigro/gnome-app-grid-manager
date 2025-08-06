@@ -4,7 +4,7 @@ A TUI program for managing overview app grid folders in Gnome.
 
 ## Category Folder
 
-A **category folder** is this application's name for the grouped applications in the overview.
+A *category folder* is this program's name for the grouped applications in the overview.
 
 ## Menu Options
 
@@ -12,8 +12,8 @@ A **category folder** is this application's name for the grouped applications in
 * **Create New Category Folder**: Create a new category folder to put applications into
 * **Delete Existing Category Folder**: Choose and confirm deletion of a category folder
 * **Clean Category Files**: Removes applications that aren't installed and visible from each category file, and sorts them alphabetically
-* **Apply Gnome Category Folders**: Applies the configured category folders and applications in Gnome
-* **Clear Gnome Category Folders**: Removes all category folders and leaves applications unorganized
+* **Apply Gnome Category Folders**: Applies the configured category folders and applications in the Gnome application grid
+* **Clear Gnome Category Folders**: Clears the category folders in the Gnome overview application grid
 
 ## Filesystem
 
