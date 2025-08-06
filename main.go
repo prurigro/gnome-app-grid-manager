@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"encoding/json"
 	"time"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
@@ -149,8 +147,4 @@ func main() {
 	}
 
 	ui.Message("Quitting...")
-
-	// u, _ := json.Marshal(application.GetFiles(category.List[2].Applications))
-	u, _ := json.Marshal(category.GetNames(category.GetListWithoutUncategorized()))
-	fmt.Println(string(u))
 }
