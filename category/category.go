@@ -95,6 +95,13 @@ func addApplication(appItem application.Data, catIndex int) {
 	writeCategory(List[catIndex])
 }
 
+// Clean up category files by re-writing each of them
+func CleanFiles() {
+	for _, catItem := range GetListWithoutUncategorized() {
+		writeCategory(catItem)
+	}
+}
+
 // Move an application from one category to another
 func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex int) {
 	removeApplication(appItem, oldCatIndex)
