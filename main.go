@@ -11,7 +11,7 @@ import (
 
 var (
 	uiResponse int // -1 is quit, -2 is back
-	mainMenu = []string{"Manage Application Categories", "Create New Category Folder", "Delete Existing Category Folder", "Clean Category Files", "Apply Gnome Category Folders", "Clear Gnome Category Folders", "Quit"}
+	mainMenu = []string{"Manage Application Categories", "Create New Category Folder", "Delete Existing Category Folder", "Clean and Sort Category Files", "Apply Category Folders in Gnome", "Restore Default Layout in Gnome", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
@@ -122,7 +122,7 @@ func cleanCategoryFiles() {
 	}
 
 	category.CleanFiles()
-	ui.MessageWait("Successfully cleaned category files")
+	ui.MessageWait("The applications in each category file have been cleaned and sorted")
 }
 
 // Apply configured categories to the gnome application list
