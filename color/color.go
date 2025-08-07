@@ -1,5 +1,9 @@
 package color
 
+import (
+	"git.darkcloud.ca/kevin/gnome-appcat-manager/cli"
+)
+
 var escapes = map[string]string{
 	"grey": "\033[90m",
 	"red": "\033[91m",
@@ -13,5 +17,9 @@ var escapes = map[string]string{
 }
 
 func Add(color string, text string) (string) {
-	return escapes[color] + text + escapes["reset"]
+	if cli.IsInteractive() {
+		return escapes[color] + text + escapes["reset"]
+	} else {
+		return text
+	}
 }
