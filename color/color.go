@@ -17,7 +17,7 @@ var escapes = map[string]string{
 }
 
 func Add(color string, text string) (string) {
-	if cli.IsInteractive() {
+	if cli.IsInteractive {
 		return escapes[color] + text + escapes["reset"]
 	} else {
 		return text

@@ -5,7 +5,9 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// Check if the terminal session is interactive
-func IsInteractive() bool {
-	return terminal.IsTerminal(int(os.Stdout.Fd()))
+var IsInteractive bool
+
+func init() {
+	// Check if the terminal session is interactive
+	IsInteractive = terminal.IsTerminal(int(os.Stdout.Fd()))
 }

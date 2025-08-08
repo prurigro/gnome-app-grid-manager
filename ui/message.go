@@ -10,7 +10,7 @@ import (
 
 // Clear the terminal and display a message
 func Message(message string) {
-	if cli.IsInteractive() {
+	if cli.IsInteractive {
 		fmt.Print("\033[H\033[2J")
 	}
 
@@ -24,7 +24,7 @@ func MessageWait(message string) {
 	// Inform the user of what to do next
 	fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
 
-	if cli.IsInteractive() {
+	if cli.IsInteractive {
 		// Hide the cursor
 		fmt.Print("\033[?25l")
 
