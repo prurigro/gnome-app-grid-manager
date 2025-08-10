@@ -24,7 +24,7 @@ This program creates the directory `$XDG_DATA_HOME/gnome-shell/categories` and p
 
 Each `.category` file represents a category folder, and contains a list of `.desktop` files that get included inside.
 
-To find `.desktop` files, it searches `$XDG_DATA_HOME` and `$XDG_DATA_DIRS` for valid locations and includes all unique `.desktop` files that aren't configured to be hidden.
+The `$XDG_DATA_HOME` directory and each directory listed in `$XDG_DATA_DIRS` are searched for unique `.desktop` files that aren't configured to be hidden (`NoDisplay=true`, `Hidden=true` or `NotShowIn=gnome`).
 
 ## CREDITS
 
