@@ -196,6 +196,8 @@ func displayHelp(status int) {
 	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[4])
 	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[5])
 	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
+	fmt.Println("\n" + color.Blue("CONFIG"))
+	fmt.Println("  " + color.White("Categories directory") + ": " + category.Directory)
 	fmt.Println("")
 	os.Exit(status)
 }

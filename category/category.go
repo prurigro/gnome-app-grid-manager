@@ -21,7 +21,7 @@ type Data struct {
 
 var (
 	List = []Data{}
-	categoriesDirectory = env.XdgDataHome + "/gnome-shell/categories"
+	Directory = env.XdgDataHome + "/gnome-shell/categories"
 )
 
 // Write a category to file
@@ -29,7 +29,7 @@ func writeCategory(catItem Data) {
 	// Only write if a file exists (ie: don't write uncategorized)
 	if catItem.File != "" {
 		// The full category file path
-		filePath := categoriesDirectory + "/" + catItem.File
+		filePath := Directory + "/" + catItem.File
 
 		// Truncate and create the category file
 		file, err := os.Create(filePath)
@@ -107,11 +107,11 @@ func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex in
 // Create a category
 func Create(name string) (bool, string) {
 	fileName := name + ".category"
-	filePath := categoriesDirectory + "/" + fileName
+	filePath := Directory + "/" + fileName
 
 	// Create the categories directory if it doesn't already exist
-	if stat, err := os.Stat(categoriesDirectory); err != nil || !stat.IsDir() {
-		os.MkdirAll(categoriesDirectory, 0755)
+	if stat, err := os.Stat(Directory); err != nil || !stat.IsDir() {
+		os.MkdirAll(Directory, 0755)
 	}
 
 	// Complain if the category already exists
@@ -142,7 +142,7 @@ func Create(name string) (bool, string) {
 // Delete a category
 func Delete(name string) (bool, string) {
 	fileName := name + ".category"
-	filePath := categoriesDirectory + "/" + fileName
+	filePath := Directory + "/" + fileName
 
 	// Delete the category file if it exists (otherwise our job here is already done)
 	if _, err := os.Stat(filePath); err == nil || !os.IsNotExist(err) {
@@ -210,11 +210,11 @@ func Populate() {
 	appFiles := application.GetFiles(application.List)
 	appList := application.List
 
-	// The set of files in categoriesDirectory
-	catFiles, _ := os.ReadDir(categoriesDirectory)
+	// The set of files in Directory
+	catFiles, _ := os.ReadDir(Directory)
 
-	// Loop through each file in categoriesDirectory if it exists
-	if stat, err := os.Stat(categoriesDirectory); err == nil && stat.IsDir() {
+	// Loop through each file in Directory if it exists
+	if stat, err := os.Stat(Directory); err == nil && stat.IsDir() {
 		for _, catFile := range catFiles {
 			// Only open .category files
 			if catNameRegex.MatchString(catFile.Name()) {
@@ -225,7 +225,7 @@ func Populate() {
 				catNameMatchReference := catNameRegex.FindStringSubmatch(catFile.Name())
 
 				// Get the full path of the file
-				filePath := categoriesDirectory + "/" + catFile.Name()
+				filePath := Directory + "/" + catFile.Name()
 
 				// Open the file
 				file, err := os.Open(filePath)
