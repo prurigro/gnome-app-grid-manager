@@ -13,9 +13,10 @@ import (
 
 var (
 	appName string
-	uiResponse int // -1 is quit, -2 is back
+	appVersion string = "v1.0.1"
 	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort config files", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
+	uiResponse int // -1 is quit, -2 is back
 )
 
 // Checks if at least one category folder exists and informs the user if they don't
@@ -185,6 +186,12 @@ func mainMenuLoop() {
 	ui.Message("Quitting...")
 }
 
+// Show version information and exit
+func displayVersion() {
+	fmt.Println("\n" + color.White(appName) + " " + color.Violet(appVersion) + "\n")
+	os.Exit(0)
+}
+
 // Show the help text and exit
 func displayHelp(status int) {
 	fmt.Println("\n" + color.Yellow(appName) + " - Organize your Gnome overview applications by category")
@@ -195,6 +202,7 @@ func displayHelp(status int) {
 	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[3])
 	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[4])
 	fmt.Println("  " + color.White("-c") + color.Gray("|") + color.White("--clean") + "\t" + mainMenuOptions[5])
+	fmt.Println("  " + color.White("-v") + color.Gray("|") + color.White("--version") + "\t" + "Display the current version")
 	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
 	fmt.Println("\n" + color.Blue("CONFIG DIRECTORY"))
 	fmt.Println("  " + category.Directory)
@@ -215,14 +223,17 @@ func main() {
 		displayHelp(1)
 	} else if len(args) == 1 {
 		switch args[0] {
-			case "-c", "--clean":
-				cleanCategoryFiles()
-
 			case "-a", "--apply":
 				applyGnomeCategoryFolders()
 
 			case "-r", "--restore":
 				restoreGnomeDefaultLayout()
+
+			case "-c", "--clean":
+				cleanCategoryFiles()
+
+			case "-v", "--version":
+				displayVersion()
 
 			case "-h", "--help":
 				displayHelp(0)
