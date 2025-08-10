@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"time"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
@@ -10,8 +12,9 @@ import (
 )
 
 var (
+	appName string
 	uiResponse int // -1 is quit, -2 is back
-	mainMenu = []string{"Manage Application Categories", "Create New Category Folder", "Delete Existing Category Folder", "Clean and Sort Category Files", "Apply Category Folders in Gnome", "Restore Default Layout in Gnome", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort category files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
@@ -38,7 +41,7 @@ func manageApplicationCategories() {
 	}
 
 	for {
-		uiResponse = ui.List("Select a " + color.Add("red", "category folder") + " to edit its " + color.Add("yellow", "applications"), category.GetNames(category.List), catIndex);
+		uiResponse = ui.List("Select a " + color.Red("category folder") + " to edit its " + color.Yellow("applications"), category.GetNames(category.List), catIndex);
 
 		if uiResponse == -1 || uiResponse == -2 {
 			return
@@ -48,7 +51,7 @@ func manageApplicationCategories() {
 		appIndex = 0
 
 		for {
-			uiResponse = ui.List("Select an " + color.Add("red", "application") + " to change its " + color.Add("yellow", "category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
+			uiResponse = ui.List("Select an " + color.Red("application") + " to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
 
 			if uiResponse == -1 {
 				return
@@ -57,7 +60,7 @@ func manageApplicationCategories() {
 			}
 
 			appIndex = uiResponse
-			uiResponse = ui.List("Select a new " + color.Add("red", "category folder") + " for " + color.Add("yellow", category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
+			uiResponse = ui.List("Select a new " + color.Red("category folder") + " for " + color.Yellow(category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
 
 			if uiResponse == -1 {
 				return
@@ -71,13 +74,13 @@ func manageApplicationCategories() {
 
 // Create a new category
 func createCategoryFolder() {
-	newCategory := ui.Input("Enter a new category name")
+	newCategory := ui.Input("Enter a new " + color.Red("category folder") + " name")
 
 	if newCategory != "" {
 		status, err := category.Create(newCategory)
 
 		if status {
-			ui.MessageWait("Successfully created the " + color.Add("yellow", newCategory) + " category folder")
+			ui.MessageWait("Successfully created the " + color.Red(newCategory) + " category folder")
 		} else {
 			ui.MessageWait(err)
 		}
@@ -94,14 +97,14 @@ func deleteCategoryFolder() {
 
 	for {
 		catNames := category.GetNames(category.GetListWithoutUncategorized())
-		uiResponse = ui.List("Select a " + color.Add("red", "category folder") + " to " + color.Add("yellow", "delete"), catNames, catIndex);
+		uiResponse = ui.List("Select a " + color.Red("category folder") + " to " + color.Yellow("delete"), catNames, catIndex);
 
 		if uiResponse == -1 || uiResponse == -2 {
 			return
 		}
 
 		catIndex = uiResponse
-		uiResponse = ui.List(color.Add("red", "Delete") + " the category folder " + color.Add("yellow", catNames[catIndex]) + "?", okCancelOptions, 0)
+		uiResponse = ui.List(color.Red("Delete") + " the category folder " + color.Yellow(catNames[catIndex]) + "?", okCancelOptions, 0)
 
 		if uiResponse == -1 {
 			return
@@ -122,7 +125,13 @@ func cleanCategoryFiles() {
 	}
 
 	category.CleanFiles()
-	ui.MessageWait("The applications in each category file have been cleaned and sorted")
+	ui.MessageWait("The " + color.Red("applications") + " in each " + color.Yellow("category file") + " have been cleaned and sorted")
+}
+
+// Clear the gnome application list categories
+func restoreGnomeDefaultLayout() {
+	gnome.RestoreDefault()
+	ui.MessageWait("Successfully restored the " + color.Red("default layout") + " in " + color.Yellow("Gnome"))
 }
 
 // Apply configured categories to the gnome application list
@@ -131,18 +140,12 @@ func applyGnomeCategoryFolders() {
 		return
 	}
 
-	ui.Message("Clearing old category folders...")
-	gnome.ClearCategories()
+	ui.Message("Removing the existing " + color.Red("category folders") + " from " + color.Yellow("Gnome") + "...")
+	gnome.RestoreDefault()
 	time.Sleep(3 * time.Second)
-	ui.Message("Applying categories...")
+	ui.Message("Applying configured " + color.Red("category folders") + "...")
 	gnome.ApplyCategories()
-	ui.MessageWait("Successfully applied gnome category folders")
-}
-
-// Clear the gnome application list categories
-func clearGnomeCategoryFolders() {
-	gnome.ClearCategories()
-	ui.MessageWait("Successfully cleared category folders")
+	ui.MessageWait("Successfully applied " + color.Red("category folders") + " in " + color.Yellow("Gnome"))
 }
 
 // The main menu loop when running interactively
@@ -150,9 +153,9 @@ func mainMenuLoop() {
 	var menuIndex = 0
 
 	for {
-		uiResponse = ui.List(color.Add("yellow", "Main Menu"), mainMenu, menuIndex);
+		uiResponse = ui.List(color.Yellow("Main Menu"), mainMenuOptions, menuIndex);
 
-		if uiResponse == -1 || uiResponse == -2 || uiResponse == len(mainMenu) - 1 {
+		if uiResponse == -1 || uiResponse == -2 || uiResponse == len(mainMenuOptions) - 1 {
 			break
 		}
 
@@ -175,14 +178,59 @@ func mainMenuLoop() {
 				applyGnomeCategoryFolders()
 
 			case 5:
-				clearGnomeCategoryFolders()
+				restoreGnomeDefaultLayout()
 		}
 	}
 
 	ui.Message("Quitting...")
 }
 
+// Show the help text and exit
+func displayHelp(status int) {
+	fmt.Println("\n" + color.Yellow(appName) + " - An application grid organizer for Gnome")
+	fmt.Println("\n" + color.Blue("USAGE"))
+	fmt.Println("  " + color.Violet(appName) + "\t\tRun interactively")
+	fmt.Println("  " + color.Violet(appName) + " " + color.Gray("[") + color.White("option") + color.Gray("]") + "\tDirectly run one of the options below")
+	fmt.Println("\n" + color.Blue("OPTIONS"))
+	fmt.Println("  " + color.White("-c") + color.Gray("|") + color.White("--clean") + "\t" + mainMenuOptions[3])
+	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[4])
+	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[5])
+	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
+	fmt.Println("")
+	os.Exit(status)
+}
+
 // Main menu
 func main() {
-	mainMenuLoop()
+	// Store the app name
+	appName = os.Args[0]
+
+	// Get the command line arguments
+	args := os.Args[1:]
+
+	if len(args) > 1 {
+		fmt.Println("\n" + color.Red("Error") + ": Multiple arguments are not supported")
+		displayHelp(1)
+	} else if len(args) == 1 {
+		switch args[0] {
+			case "-c", "--clean":
+				cleanCategoryFiles()
+
+			case "-a", "--apply":
+				applyGnomeCategoryFolders()
+
+			case "-r", "--restore":
+				restoreGnomeDefaultLayout()
+
+			case "-h", "--help":
+				displayHelp(0)
+
+			default:
+				fmt.Println(color.Red("Error") + ": Invalid argument")
+				displayHelp(1)
+		}
+	} else {
+		// Run the main menu loop if no arguments are provided
+		mainMenuLoop()
+	}
 }

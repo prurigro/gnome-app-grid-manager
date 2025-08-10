@@ -73,7 +73,7 @@ func getDesktopFileMeta(dir string, file string) (string, bool) {
 	fileData, err := os.Open(filePath)
 
 	if err != nil {
-		log.Fatal("Unable to open the file " + color.Add("red", filePath))
+		log.Fatal("Unable to open the file " + color.Red(filePath))
 	}
 
 	defer fileData.Close()
@@ -135,7 +135,7 @@ func GetNames(apps []Data) []string {
 	var names []string
 
 	for _, item := range apps {
-		names = append(names, item.Name + " " + color.Add("grey", item.File))
+		names = append(names, item.Name + " " + color.Gray(item.File))
 	}
 
 	return names

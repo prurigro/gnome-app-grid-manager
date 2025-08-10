@@ -1,19 +1,19 @@
 # Gnome Application Category Manager
 
-A TUI program for managing overview app grid folders in Gnome.
+An application grid organizer for Gnome.
 
 ## Category Folder
 
-A **category folder** is this program's name for the grouped applications in the overview.
+A **category folder** is this program's name for the folders of grouped applications in the overview.
 
 ## Menu Options
 
-* **Manage Application Categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
-* **Create New Category Folder**: Creates a new category folder with no applications inside
-* **Delete Existing Category Folder**: Deletes a category folder and moves its applications to **Uncategorized**
-* **Clean and Sort Category Files**: Removes applications that aren't installed and visible from each category file, and sorts them alphabetically
-* **Apply Category Folders in Gnome**: Applies the configured category folders and applications to the Gnome overview application grid
-* **Restore Default Layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
+* **Manage application categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
+* **Create new category folder**: Creates a new category folder with no applications inside
+* **Delete existing category folder**: Deletes a category folder and moves its applications to **Uncategorized**
+* **Clean and sort category files**: Removes applications that aren't installed and visible from each category file, and sorts them alphabetically
+* **Apply category folders in Gnome**: Applies the configured category folders and applications to the Gnome overview application grid
+* **Restore default layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
 
 ## Filesystem
 

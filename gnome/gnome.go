@@ -8,7 +8,7 @@ import (
 	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
 )
 
-func ClearCategories() () {
+func RestoreDefault() () {
 	var (
 		err error
 		cmd *exec.Cmd

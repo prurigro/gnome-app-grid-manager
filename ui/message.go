@@ -21,10 +21,10 @@ func Message(message string) {
 func MessageWait(message string) {
 	Message(message)
 
-	// Inform the user of what to do next
-	fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
-
 	if cli.IsInteractive {
+		// Inform the user of what to do next
+		fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
+
 		// Hide the cursor
 		fmt.Print("\033[?25l")
 

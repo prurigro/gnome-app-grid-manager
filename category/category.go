@@ -36,7 +36,7 @@ func writeCategory(catItem Data) {
 
 		// Fail with an error if we can't open the file
 		if  err != nil {
-			log.Fatal("Unable to open the file " + color.Add("red", filePath))
+			log.Fatal("Unable to open the file " + color.Red(filePath))
 		}
 
 		// Close the file once we're finished here
@@ -65,7 +65,7 @@ func writeCategory(catItem Data) {
 		}
 
 		if err := writer.Flush(); err != nil {
-			log.Fatal("Unable to write to the file " + color.Add("red", filePath))
+			log.Fatal("Unable to write to the file " + color.Red(filePath))
 		}
 	}
 }
@@ -116,7 +116,7 @@ func Create(name string) (bool, string) {
 
 	// Complain if the category already exists
 	if slices.Contains(GetFiles(GetListWithoutUncategorized()), fileName) {
-		return false, "The category " + color.Add("red", name) + " already exists"
+		return false, "The category " + color.Red(name) + " already exists"
 	}
 
 	// Create the category file if it doesn't exist (otherwise our job here is already done)
@@ -125,7 +125,7 @@ func Create(name string) (bool, string) {
 		file, err := os.Create(filePath)
 
 		if err != nil {
-			log.Fatal("The file " + color.Add("red", fileName) + " could not be created")
+			log.Fatal("The file " + color.Red(fileName) + " could not be created")
 		}
 
 		// Close the file
@@ -150,7 +150,7 @@ func Delete(name string) (bool, string) {
 		err := os.Remove(filePath)
 
 		if err != nil {
-			log.Fatal("The file " + color.Add("red", fileName) + " could not be deleted")
+			log.Fatal("The file " + color.Red(fileName) + " could not be deleted")
 		}
 	}
 
@@ -232,7 +232,7 @@ func Populate() {
 
 				// Fail with an error if we can't open the file
 				if err != nil {
-					log.Fatal("Unable to open the file " + color.Add("red", filePath))
+					log.Fatal("Unable to open the file " + color.Red(filePath))
 				}
 
 				// Read the category file and build the list of applications for that category
