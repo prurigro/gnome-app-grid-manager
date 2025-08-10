@@ -125,7 +125,7 @@ func cleanCategoryFiles() {
 	}
 
 	category.CleanFiles()
-	ui.MessageWait("The " + color.Red("applications") + " in each " + color.Yellow("category file") + " have been cleaned and sorted")
+	ui.MessageWait("The " + color.Red("applications") + " in each " + color.Yellow("category config file") + " have been cleaned and sorted")
 }
 
 // Clear the gnome application list categories
