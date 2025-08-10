@@ -14,7 +14,7 @@ import (
 var (
 	appName string
 	uiResponse int // -1 is quit, -2 is back
-	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort config files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort config files", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
@@ -172,13 +172,13 @@ func mainMenuLoop() {
 				deleteCategoryFolder()
 
 			case 3:
-				cleanCategoryFiles()
-
-			case 4:
 				applyGnomeCategoryFolders()
 
-			case 5:
+			case 4:
 				restoreGnomeDefaultLayout()
+
+			case 5:
+				cleanCategoryFiles()
 		}
 	}
 
@@ -192,9 +192,9 @@ func displayHelp(status int) {
 	fmt.Println("  " + color.Violet(appName) + "\t\tRun interactively")
 	fmt.Println("  " + color.Violet(appName) + " " + color.Gray("[") + color.White("option") + color.Gray("]") + "\tDirectly run one of the options below")
 	fmt.Println("\n" + color.Blue("OPTIONS"))
-	fmt.Println("  " + color.White("-c") + color.Gray("|") + color.White("--clean") + "\t" + mainMenuOptions[3])
-	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[4])
-	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[5])
+	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[3])
+	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[4])
+	fmt.Println("  " + color.White("-c") + color.Gray("|") + color.White("--clean") + "\t" + mainMenuOptions[5])
 	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
 	fmt.Println("\n" + color.Blue("CONFIG DIRECTORY"))
 	fmt.Println("  " + category.Directory)
