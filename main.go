@@ -187,7 +187,7 @@ func mainMenuLoop() {
 
 // Show the help text and exit
 func displayHelp(status int) {
-	fmt.Println("\n" + color.Yellow(appName) + " - An application grid organizer for Gnome")
+	fmt.Println("\n" + color.Yellow(appName) + " - Categorize your Gnome overview applications into folders")
 	fmt.Println("\n" + color.Blue("USAGE"))
 	fmt.Println("  " + color.Violet(appName) + "\t\tRun interactively")
 	fmt.Println("  " + color.Violet(appName) + " " + color.Gray("[") + color.White("option") + color.Gray("]") + "\tDirectly run one of the options below")

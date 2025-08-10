@@ -1,10 +1,6 @@
 # Gnome Application Category Manager
 
-An application grid organizer for Gnome.
-
-## Category Folder
-
-A **category folder** is this program's name for the folders of grouped applications in the overview.
+Categorize your Gnome overview applications into folders
 
 ## Menu Options
 
