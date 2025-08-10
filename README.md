@@ -1,19 +1,19 @@
 # Gnome Application Grid Manager
 
-Categorize your Gnome overview applications into folders
+Organize your Gnome overview applications by category
 
 ## Menu Options
 
 * **Manage application categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
 * **Create new category folder**: Creates a new category folder with no applications inside
 * **Delete existing category folder**: Deletes a category folder and moves its applications to **Uncategorized**
-* **Clean and sort category files**: Removes applications that aren't installed and visible from each category file, and sorts them alphabetically
+* **Clean and sort .category files**: Removes applications that aren't installed and visible from each .category file, and sorts them alphabetically
 * **Apply category folders in Gnome**: Applies the configured category folders and applications to the Gnome overview application grid
 * **Restore default layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
 
 ## CLI Options
 
-* **-c**|**--clean**: Clean and sort category files
+* **-c**|**--clean**: Clean and sort .category files
 * **-a**|**--apply**: Apply category folders in Gnome
 * **-r**|**--restore**: Restore default layout in Gnome
 * **-h**|**--help**: Show the help text

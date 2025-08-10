@@ -14,7 +14,7 @@ import (
 var (
 	appName string
 	uiResponse int // -1 is quit, -2 is back
-	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort category files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort .category files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
@@ -187,7 +187,7 @@ func mainMenuLoop() {
 
 // Show the help text and exit
 func displayHelp(status int) {
-	fmt.Println("\n" + color.Yellow(appName) + " - Categorize your Gnome overview applications into folders")
+	fmt.Println("\n" + color.Yellow(appName) + " - Organize your Gnome overview applications by category")
 	fmt.Println("\n" + color.Blue("USAGE"))
 	fmt.Println("  " + color.Violet(appName) + "\t\tRun interactively")
 	fmt.Println("  " + color.Violet(appName) + " " + color.Gray("[") + color.White("option") + color.Gray("]") + "\tDirectly run one of the options below")
