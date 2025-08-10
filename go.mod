@@ -1,4 +1,4 @@
-module git.darkcloud.ca/kevin/gnome-app-grid-manager
+module github.com/prurigro/gnome-app-grid-manager
 
 go 1.24.5
 

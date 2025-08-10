@@ -1,7 +1,7 @@
 package color
 
 import (
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/cli"
+	"github.com/prurigro/gnome-app-grid-manager/cli"
 )
 
 var escapes = map[string]string{

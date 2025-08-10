@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"os/exec"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/application"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/category"
+	"github.com/prurigro/gnome-app-grid-manager/application"
+	"github.com/prurigro/gnome-app-grid-manager/category"
 )
 
 func RestoreDefault() () {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/application"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/category"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/color"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/gnome"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/ui"
+	"github.com/prurigro/gnome-app-grid-manager/application"
+	"github.com/prurigro/gnome-app-grid-manager/category"
+	"github.com/prurigro/gnome-app-grid-manager/color"
+	"github.com/prurigro/gnome-app-grid-manager/gnome"
+	"github.com/prurigro/gnome-app-grid-manager/ui"
 )
 
 var (

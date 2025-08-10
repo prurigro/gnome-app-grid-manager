@@ -8,9 +8,9 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/application"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/color"
-	"git.darkcloud.ca/kevin/gnome-app-grid-manager/env"
+	"github.com/prurigro/gnome-app-grid-manager/application"
+	"github.com/prurigro/gnome-app-grid-manager/color"
+	"github.com/prurigro/gnome-app-grid-manager/env"
 )
 
 type Data struct {
