@@ -145,8 +145,8 @@ func clearGnomeCategoryFolders() {
 	ui.MessageWait("Successfully cleared category folders")
 }
 
-// Main menu
-func main() {
+// The main menu loop when running interactively
+func mainMenuLoop() {
 	var menuIndex = 0
 
 	for {
@@ -180,4 +180,9 @@ func main() {
 	}
 
 	ui.Message("Quitting...")
+}
+
+// Main menu
+func main() {
+	mainMenuLoop()
 }
