@@ -1,4 +1,4 @@
-# Gnome Application Category Manager
+# Gnome Application Grid Manager
 
 Categorize your Gnome overview applications into folders
 

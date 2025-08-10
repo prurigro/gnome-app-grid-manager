@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/application"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/category"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/gnome"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/ui"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/application"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/category"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/color"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/gnome"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/ui"
 )
 
 var (

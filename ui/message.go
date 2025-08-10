@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"github.com/charmbracelet/lipgloss"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/cli"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/cli"
 )
 
 // Clear the terminal and display a message

@@ -8,8 +8,8 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/color"
-	"git.darkcloud.ca/kevin/gnome-appcat-manager/env"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/color"
+	"git.darkcloud.ca/kevin/gnome-app-grid-manager/env"
 )
 
 type Data struct {
