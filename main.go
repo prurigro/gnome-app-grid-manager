@@ -14,7 +14,7 @@ import (
 var (
 	appName string
 	uiResponse int // -1 is quit, -2 is back
-	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort .category files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Clean and sort config files", "Apply category folders in Gnome", "Restore default layout in Gnome", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 )
 
@@ -196,8 +196,8 @@ func displayHelp(status int) {
 	fmt.Println("  " + color.White("-a") + color.Gray("|") + color.White("--apply") + "\t" + mainMenuOptions[4])
 	fmt.Println("  " + color.White("-r") + color.Gray("|") + color.White("--restore") + "\t" + mainMenuOptions[5])
 	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
-	fmt.Println("\n" + color.Blue("CONFIG"))
-	fmt.Println("  " + color.White("Categories directory") + ": " + category.Directory)
+	fmt.Println("\n" + color.Blue("CONFIG DIRECTORY"))
+	fmt.Println("  " + category.Directory)
 	fmt.Println("")
 	os.Exit(status)
 }
