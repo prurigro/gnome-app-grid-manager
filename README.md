@@ -13,7 +13,7 @@ Organize your Gnome overview applications by category
 
 ## CLI Options
 
-* **-a**|**--apply**: Apply category folders to Gnome
+* **-a**|**--apply**: Apply category folders in Gnome
 * **-r**|**--restore**: Restore default layout in Gnome
 * **-c**|**--clean**: Clean and sort .category files
 * **-h**|**--help**: Show the help text
