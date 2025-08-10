@@ -11,6 +11,13 @@ Categorize your Gnome overview applications into folders
 * **Apply category folders in Gnome**: Applies the configured category folders and applications to the Gnome overview application grid
 * **Restore default layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
 
+## CLI Options
+
+* **-c**|**--clean**: Clean and sort category files
+* **-a**|**--apply**: Apply category folders in Gnome
+* **-r**|**--restore**: Restore default layout in Gnome
+* **-h**|**--help**: Show the help text
+
 ## Filesystem
 
 This program creates the directory `$XDG_DATA_HOME/gnome-shell/categories` and places `.category` files inside.
