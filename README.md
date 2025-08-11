@@ -2,6 +2,27 @@
 
 Organize your Gnome overview applications by category
 
+## Getting Started
+
+### Install
+
+#### General
+
+1. The package for **Go** should be installed
+2. The `GOPATH` variable should be configured to point somewhere your user can read and write (eg: `export GOPATH="$HOME/.local/share/go"`)
+3. `$GOPATH/bin` should be added to `$PATH` (eg: `export PATH="$GOPATH/bin:$PATH"`)
+3. Run `go install github.com/prurigro/gnome-app-grid-manager@latest`
+
+#### Arch Linux
+
+Install the [AUR Package](https://aur.archlinux.org/packages/gnome-app-grid-manager)
+
+### Build
+
+1. Clone or download and extract the latest release for **gnome-app-grid-manager**
+2. Enter the directory and run `go build`
+3. The binary should now be available in the same directory
+
 ## Menu Options
 
 * **Manage application categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
