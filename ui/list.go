@@ -28,15 +28,15 @@ var (
 // Additional keybindings for help
 type listKeyMap struct {
 	Enter key.Binding
-	Backspace key.Binding
+	Escape key.Binding
 }
 
 func (k listKeyMap) AdditionalShortHelp() []key.Binding {
-	return []key.Binding{k.Enter, k.Backspace}
+	return []key.Binding{k.Enter, k.Escape}
 }
 
 func (k listKeyMap) AdditionalFullHelp() []key.Binding {
-	return []key.Binding{k.Enter, k.Backspace}
+	return []key.Binding{k.Enter, k.Escape}
 }
 
 var listKeys = listKeyMap{
@@ -44,9 +44,9 @@ var listKeys = listKeyMap{
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "select"),
 	),
-	Backspace: key.NewBinding(
-		key.WithKeys("backspace"),
-		key.WithHelp("bksp", "back"),
+	Escape: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("esc", "back"),
 	),
 }
 
@@ -121,7 +121,7 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.quitting = true
 					return m, tea.Quit
 
-				case "backspace":
+				case "esc":
 					listSelectedValue = -2
 					return m, tea.Quit
 
