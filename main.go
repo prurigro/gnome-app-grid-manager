@@ -14,7 +14,7 @@ import (
 var (
 	appName string
 	appVersion string = "v1.0.1"
-	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort config files", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort data files", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 	uiResponse int // -1 is quit, -2 is back
 )
@@ -126,7 +126,7 @@ func cleanCategoryFiles() {
 	}
 
 	category.CleanFiles()
-	ui.MessageWait("The " + color.Red("applications") + " in each " + color.Yellow("category config file") + " have been cleaned and sorted")
+	ui.MessageWait("The " + color.Red("applications") + " in each " + color.Yellow("category file") + " have been cleaned and sorted")
 }
 
 // Clear the gnome application list categories
@@ -204,7 +204,7 @@ func displayHelp(status int) {
 	fmt.Println("  " + color.White("-c") + color.Gray("|") + color.White("--clean") + "\t" + mainMenuOptions[5])
 	fmt.Println("  " + color.White("-v") + color.Gray("|") + color.White("--version") + "\t" + "Display the current version")
 	fmt.Println("  " + color.White("-h") + color.Gray("|") + color.White("--help") + "\t" + "Show this help text")
-	fmt.Println("\n" + color.Blue("CONFIG DIRECTORY"))
+	fmt.Println("\n" + color.Blue("DATA DIRECTORY"))
 	fmt.Println("  " + category.Directory)
 	fmt.Println("")
 	os.Exit(status)

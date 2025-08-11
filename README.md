@@ -30,7 +30,7 @@ Install the [AUR Package](https://aur.archlinux.org/packages/gnome-app-grid-mana
 * **Delete existing category folder**: Deletes a category folder and moves its applications to **Uncategorized**
 * **Apply category folders in Gnome**: Applies the configured category folders and applications in the Gnome overview application grid
 * **Restore default layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
-* **Clean and sort config files**: Removes applications that aren't installed and visible from each .category file in the config directory, and sorts them alphabetically
+* **Clean and sort data files**: Removes applications that aren't installed and visible from each .category file in the data directory, and sorts them alphabetically
 
 ## CLI Options
 
