@@ -52,10 +52,13 @@ func (m inputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m inputModel) View() string {
+	lightStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#616161"))
+	darkStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#494949"))
+
 	return fmt.Sprintf(
 		lipgloss.NewStyle().PaddingTop(1).PaddingLeft(3).PaddingBottom(1).Render(inputTitle + "\n\n%s\n\n%s"),
 		m.textInput.View(),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render("esc to quit"),
+		lightStyle.Render("enter") + darkStyle.Render(" select • ") + lightStyle.Render("esc") + darkStyle.Render(" quit"),
 	) + "\n"
 }
 
