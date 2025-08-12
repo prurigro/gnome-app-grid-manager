@@ -151,18 +151,23 @@ func applyGnomeCategoryFolders() {
 
 // The main menu loop when running interactively
 func mainMenuLoop() {
+	// Start the menu index at 0 so the initial load begins at the top menu option
 	var menuIndex = 0
 
 	for {
+		// Display the main menu
 		uiResponse = ui.List(color.Yellow("Main Menu"), mainMenuOptions, menuIndex);
 
+		// Exit if the quit key, back key or quit menu option are selected
 		if uiResponse == -1 || uiResponse == -2 || uiResponse == len(mainMenuOptions) - 1 {
 			break
 		}
 
+		// Update the menu index to remember where we were and run the selected function
 		menuIndex = uiResponse
 
-		switch uiResponse {
+		// Run the selected function
+		switch menuIndex {
 			case 0:
 				manageApplicationCategories()
 
@@ -181,8 +186,14 @@ func mainMenuLoop() {
 			case 5:
 				cleanCategoryFiles()
 		}
+
+		// Exit if the function that just completed ended with the quit key
+		if uiResponse == -1 {
+			break
+		}
 	}
 
+	// Inform the user that the application is exiting intentionally
 	ui.Message("Quitting...")
 }
 
