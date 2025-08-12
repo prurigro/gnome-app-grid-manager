@@ -117,6 +117,18 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyMsg:
 			switch keypress := msg.String(); keypress {
+				case "up":
+					// Loop from the top (one above the target since the key will decrement by one)
+					if m.list.Index() == 0 {
+						m.list.Select(len(listItems))
+					}
+
+				case "down":
+					// Loop from the bottom (one below the target since the key will increment by one)
+					if m.list.Index() == len(listItems) - 1 {
+						m.list.Select(-1)
+					}
+
 				case "q", "ctrl+c":
 					m.quitting = true
 					return m, tea.Quit
