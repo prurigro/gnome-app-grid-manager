@@ -117,13 +117,13 @@ func (m listModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyMsg:
 			switch keypress := msg.String(); keypress {
-				case "up":
+				case "up", "k":
 					// Loop from the top (one above the target since the key will decrement by one)
 					if m.list.Index() == 0 {
 						m.list.Select(len(listItems))
 					}
 
-				case "down":
+				case "down", "j":
 					// Loop from the bottom (one below the target since the key will increment by one)
 					if m.list.Index() == len(listItems) - 1 {
 						m.list.Select(-1)
