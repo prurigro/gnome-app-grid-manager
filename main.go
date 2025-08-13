@@ -52,7 +52,7 @@ func manageApplicationCategories() {
 		appIndex = 0
 
 		for {
-			uiResponse = ui.List("Select an " + color.Red("application") + " from '" + color.White(category.List[catIndex].Name) + "' to choose a new " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
+			uiResponse = ui.List("Select an " + color.Red("application") + " from “" + color.White(category.List[catIndex].Name) + "” to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
 
 			if uiResponse == -1 {
 				return
