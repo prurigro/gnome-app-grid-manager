@@ -13,7 +13,7 @@ import (
 
 var (
 	appName string
-	appVersion string = "v1.0.6"
+	appVersion string = "v1.1.0"
 	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Rename existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort data files", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 	uiResponse int // -1 is quit, -2 is back
