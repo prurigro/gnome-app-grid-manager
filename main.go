@@ -51,27 +51,28 @@ func manageApplicationCategories() {
 		catIndex = uiResponse
 		appIndex = 0
 
-		if len(application.GetNames(category.List[catIndex].Applications)) == 0 {
-			ui.MessageWait("No " + color.Red("applications") + " exist in " + color.Yellow(category.List[catIndex].Name))
-		} else {
-			for {
-				uiResponse = ui.List("Select an " + color.Red("application") + " from " + color.White(category.List[catIndex].Name) + " to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
+		for {
+			if len(application.GetNames(category.List[catIndex].Applications)) == 0 {
+				ui.MessageWait("No " + color.Red("applications") + " exist in " + color.Yellow(category.List[catIndex].Name))
+				break
+			}
 
-				if uiResponse == -1 {
-					return
-				} else if uiResponse == -2 {
-					break
-				}
+			uiResponse = ui.List("Select an " + color.Red("application") + " from " + color.White(category.List[catIndex].Name) + " to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
 
-				appIndex = uiResponse
-				uiResponse = ui.List("Select a new " + color.Red("category folder") + " for " + color.Yellow(category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
+			if uiResponse == -1 {
+				return
+			} else if uiResponse == -2 {
+				break
+			}
 
-				if uiResponse == -1 {
-					return
-				} else if uiResponse != -2 {
-					newCatIndex = uiResponse
-					category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
-				}
+			appIndex = uiResponse
+			uiResponse = ui.List("Select a new " + color.Red("category folder") + " for " + color.Yellow(category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
+
+			if uiResponse == -1 {
+				return
+			} else if uiResponse != -2 {
+				newCatIndex = uiResponse
+				category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
 			}
 		}
 	}
