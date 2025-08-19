@@ -182,7 +182,7 @@ func applyGnomeCategoryFolders() {
 	time.Sleep(1 * time.Second)
 	ui.Message("Applying configured " + color.Red("category folders") + "...")
 	gnome.ApplyCategories()
-	ui.MessageWait("Successfully applied " + color.Red("category folders") + " in " + color.Yellow("Gnome"))
+	ui.MessageWait("Successfully applied " + color.Red("category folders") + " in " + color.Yellow("Gnome") + "\n\n(You may need to log out and back in)")
 }
 
 // The main menu loop when running interactively
