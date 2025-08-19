@@ -14,7 +14,7 @@ import (
 var (
 	appName string
 	appVersion string = "v1.0.5"
-	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort data files", "Quit"}
+	mainMenuOptions = []string{"Manage application categories", "Create new category folder", "Delete existing category folder", "Rename existing category folder", "Apply category folders in Gnome", "Restore default layout in Gnome", "Clean and sort data files", "Quit"}
 	okCancelOptions = []string{"Confirm", "Cancel"}
 	uiResponse int // -1 is quit, -2 is back
 )
@@ -75,22 +75,22 @@ func manageApplicationCategories() {
 
 // Create a new category
 func createCategoryFolder() {
-	newCategory := ui.Input("Enter a new " + color.Red("category folder") + " name")
+	newCategoryName := ui.Input("Enter a new " + color.Red("category folder name"))
 
-	if newCategory != "" {
-		status, err := category.Create(newCategory)
+	if newCategoryName != "" {
+		status, err := category.Create(newCategoryName)
 
 		if status {
-			ui.MessageWait("Successfully created the " + color.Red(newCategory) + " category folder")
+			ui.MessageWait("Successfully created the " + color.Red(newCategoryName) + " category folder")
 		} else {
 			ui.MessageWait(err)
 		}
 	}
 }
 
-// Delete an existing category
-func deleteCategoryFolder() {
-	var catIndex int = 0
+// Rename an existing category
+func renameCategoryFolder() {
+	var listIndex int = 0
 
 	if !catFoldersExist() {
 		return
@@ -98,19 +98,51 @@ func deleteCategoryFolder() {
 
 	for {
 		catNames := category.GetNames(category.GetListWithoutUncategorized())
-		uiResponse = ui.List("Select a " + color.Red("category folder") + " to " + color.Yellow("delete"), catNames, catIndex);
+		uiResponse = ui.List("Select a " + color.Red("category folder") + " to " + color.Yellow("rename"), catNames, listIndex);
 
 		if uiResponse == -1 || uiResponse == -2 {
 			return
 		}
 
-		catIndex = uiResponse
-		uiResponse = ui.List(color.Red("Delete") + " the category folder " + color.Yellow(catNames[catIndex]) + "?", okCancelOptions, 0)
+		listIndex = uiResponse
+		newCategoryName := ui.Input("Enter a new " + color.Red("category folder name") + " for " + color.Yellow(catNames[listIndex]))
+
+		if newCategoryName != "" {
+			// Send one more than listIndex to account for Uncategorized
+			status, err := category.Rename(listIndex + 1, newCategoryName)
+
+			if status {
+				ui.MessageWait("Successfully renamed " + color.Red(catNames[listIndex]) + " to " + color.Yellow(newCategoryName))
+			} else {
+				ui.MessageWait(err)
+			}
+		}
+	}
+}
+
+// Delete an existing category
+func deleteCategoryFolder() {
+	var listIndex int = 0
+
+	if !catFoldersExist() {
+		return
+	}
+
+	for {
+		catNames := category.GetNames(category.GetListWithoutUncategorized())
+		uiResponse = ui.List("Select a " + color.Red("category folder") + " to " + color.Yellow("delete"), catNames, listIndex);
+
+		if uiResponse == -1 || uiResponse == -2 {
+			return
+		}
+
+		listIndex = uiResponse
+		uiResponse = ui.List(color.Red("Delete") + " the category folder " + color.Yellow(catNames[listIndex]) + "?", okCancelOptions, 0)
 
 		if uiResponse == -1 {
 			return
 		} else if uiResponse != -2 && uiResponse != 1 {
-			status, err := category.Delete(catNames[catIndex])
+			status, err := category.Delete(catNames[listIndex])
 
 			if !status {
 				ui.MessageWait(err)
@@ -178,12 +210,15 @@ func mainMenuLoop() {
 				deleteCategoryFolder()
 
 			case 3:
-				applyGnomeCategoryFolders()
+				renameCategoryFolder()
 
 			case 4:
-				restoreGnomeDefaultLayout()
+				applyGnomeCategoryFolders()
 
 			case 5:
+				restoreGnomeDefaultLayout()
+
+			case 6:
 				cleanCategoryFiles()
 		}
 

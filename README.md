@@ -7,6 +7,7 @@ Organize your Gnome overview applications by category
 * **Manage application categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
 * **Create new category folder**: Creates a new category folder with no applications inside
 * **Delete existing category folder**: Deletes a category folder and moves its applications to **Uncategorized**
+* **Rename existing category folder**: Allows an existing category folder to be given a new name
 * **Apply category folders in Gnome**: Applies the configured category folders and applications in the Gnome overview application grid
 * **Restore default layout in Gnome**: Removes category folders from the Gnome overview application grid and resets the layout
 * **Clean and sort data files**: Removes applications that aren't installed and visible from each .category file in the data directory, and sorts them alphabetically

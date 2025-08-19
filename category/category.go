@@ -106,17 +106,18 @@ func ChangeAppCategory(appItem application.Data, oldCatIndex int, newCatIndex in
 
 // Create a category
 func Create(name string) (bool, string) {
+	// Complain if the category already exists
+	if slices.Contains(GetNames(GetListWithoutUncategorized()), name) {
+		return false, "The category " + color.Red(name) + " already exists"
+	}
+
+	// The file name and the full file path
 	fileName := name + ".category"
 	filePath := Directory + "/" + fileName
 
 	// Create the categories directory if it doesn't already exist
 	if stat, err := os.Stat(Directory); err != nil || !stat.IsDir() {
 		os.MkdirAll(Directory, 0755)
-	}
-
-	// Complain if the category already exists
-	if slices.Contains(GetFiles(GetListWithoutUncategorized()), fileName) {
-		return false, "The category " + color.Red(name) + " already exists"
 	}
 
 	// Create the category file if it doesn't exist (otherwise our job here is already done)
@@ -141,6 +142,7 @@ func Create(name string) (bool, string) {
 
 // Delete a category
 func Delete(name string) (bool, string) {
+	// The file name and the full file path
 	fileName := name + ".category"
 	filePath := Directory + "/" + fileName
 
@@ -159,6 +161,27 @@ func Delete(name string) (bool, string) {
 
 	// Return successfully
 	return true, ""
+}
+
+// Rename a category
+func Rename(catIndex int, newName string) (bool, string) {
+	// Complain if the new category already exists
+	if slices.Contains(GetNames(GetListWithoutUncategorized()), newName) {
+		return false, "The category " + color.Red(newName) + " already exists"
+	}
+
+	// Store the old category name
+	oldName := List[catIndex].Name
+
+	// Rename the category in List
+	List[catIndex].Name = newName
+	List[catIndex].File = newName + ".category"
+
+	// Create a new category file from the updated category data
+	writeCategory(List[catIndex])
+
+	// Delete the old category file and re-populate
+	return Delete(oldName)
 }
 
 // Retrieve the list of categories without uncategorized
