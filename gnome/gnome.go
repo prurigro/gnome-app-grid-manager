@@ -8,7 +8,7 @@ import (
 	"github.com/prurigro/gnome-app-grid-manager/category"
 )
 
-func RestoreDefault() () {
+func RestoreDefault() {
 	var (
 		err error
 		cmd *exec.Cmd
