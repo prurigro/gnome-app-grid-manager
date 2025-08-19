@@ -2,6 +2,8 @@
 
 Organize your Gnome overview applications by category
 
+![Screenshot of the Gnome App Grid after applying category folders](screenshots/gnome-app-grid.png)
+
 ## Menu Options
 
 * **Manage application categories**: Interactively move applications between category folders (includes a default **Uncategorized** list)
