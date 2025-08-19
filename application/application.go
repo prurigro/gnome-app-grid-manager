@@ -79,7 +79,10 @@ func getDesktopFileMeta(dir string, file string) (string, bool) {
 	defer fileData.Close()
 
 	nameMatchRegex := regexp.MustCompile("(?i)^ *name *= *(.*) *$")
-	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)^ *(nodisplay|hidden|notshowin) *= *(true|gnome)")
+	noDisplayFilesMatchRegex := regexp.MustCompile("(?i)^ *(nodisplay|hidden) *= *true")
+	notShowInGnomeMatchRegex := regexp.MustCompile("(?i)^ *notshowin *=.*gnome")
+	onlyShowInMatchRegex := regexp.MustCompile("(?i)^ *onlyshowin *=")
+	equalsGnomeMatchRegex := regexp.MustCompile("(?i)=.*gnome")
 	scanner := bufio.NewScanner(fileData)
 
 	for scanner.Scan() {
@@ -87,7 +90,13 @@ func getDesktopFileMeta(dir string, file string) (string, bool) {
 			name = nameMatchRegex.FindStringSubmatch(scanner.Text())[1]
 		}
 
-		if noDisplayFilesMatchRegex.MatchString(scanner.Text()) {
+		// If NoDisplay or Hidden are true, or if NotShowIn includes Gnome then we should skip the app
+		if noDisplayFilesMatchRegex.MatchString(scanner.Text()) || notShowInGnomeMatchRegex.MatchString(scanner.Text()) {
+			display = false
+		}
+
+		// If OnlyShowIn is set and Gnome isn't included then we should skip the app
+		if onlyShowInMatchRegex.MatchString(scanner.Text()) && !equalsGnomeMatchRegex.MatchString(scanner.Text()) {
 			display = false
 		}
 	}
