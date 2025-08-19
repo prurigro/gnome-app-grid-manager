@@ -45,7 +45,7 @@ func (m inputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case inputErrMsg:
 			m.err = msg
 			return m, nil
-		}
+	}
 
 	m.textInput, cmd = m.textInput.Update(msg)
 	return m, cmd
