@@ -22,7 +22,7 @@ var (
 // Checks if at least one category folder exists and informs the user if they don't
 func catFoldersExist() bool {
 	if len(category.List) < 2 {
-		ui.MessageWait("No category folders currently exist")
+		ui.MessageWait("No " + color.Red("category folders") + " currently exist")
 		return false
 	}
 
@@ -51,23 +51,27 @@ func manageApplicationCategories() {
 		catIndex = uiResponse
 		appIndex = 0
 
-		for {
-			uiResponse = ui.List("Select an " + color.Red("application") + " from “" + color.White(category.List[catIndex].Name) + "” to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
+		if len(application.GetNames(category.List[catIndex].Applications)) == 0 {
+			ui.MessageWait("No " + color.Red("applications") + " exist in " + color.Yellow(category.List[catIndex].Name))
+		} else {
+			for {
+				uiResponse = ui.List("Select an " + color.Red("application") + " from " + color.White(category.List[catIndex].Name) + " to change its " + color.Yellow("category folder"), application.GetNames(category.List[catIndex].Applications), appIndex)
 
-			if uiResponse == -1 {
-				return
-			} else if uiResponse == -2 {
-				break
-			}
+				if uiResponse == -1 {
+					return
+				} else if uiResponse == -2 {
+					break
+				}
 
-			appIndex = uiResponse
-			uiResponse = ui.List("Select a new " + color.Red("category folder") + " for " + color.Yellow(category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
+				appIndex = uiResponse
+				uiResponse = ui.List("Select a new " + color.Red("category folder") + " for " + color.Yellow(category.List[catIndex].Applications[appIndex].Name), category.GetNames(category.List), newCatIndex);
 
-			if uiResponse == -1 {
-				return
-			} else if uiResponse != -2 {
-				newCatIndex = uiResponse
-				category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
+				if uiResponse == -1 {
+					return
+				} else if uiResponse != -2 {
+					newCatIndex = uiResponse
+					category.ChangeAppCategory(category.List[catIndex].Applications[appIndex], catIndex, newCatIndex)
+				}
 			}
 		}
 	}
