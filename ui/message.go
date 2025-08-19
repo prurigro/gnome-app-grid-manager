@@ -1,12 +1,40 @@
 package ui
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/prurigro/gnome-app-grid-manager/cli"
 )
+
+type messageModel struct {
+	quit bool
+}
+
+func (m messageModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m messageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.Type {
+				case tea.KeyEnter, tea.KeyEsc, tea.KeyCtrlC:
+					return m, tea.Quit
+			}
+	}
+
+	return m, nil
+}
+
+func (m messageModel) View() string {
+	if m.quit {
+		return ""
+	}
+
+	// Inform the user of how to continue
+	return lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter or esc to continue")
+}
 
 // Clear the terminal and display a message
 func Message(message string) {
@@ -22,17 +50,8 @@ func MessageWait(message string) {
 	Message(message)
 
 	if cli.IsInteractive {
-		// Inform the user of what to do next
-		fmt.Println(lipgloss.NewStyle().PaddingLeft(3).Foreground(lipgloss.Color("8")).Render("Press enter to continue"))
-
-		// Hide the cursor
-		fmt.Print("\033[?25l")
-
-		// Show the cursor when this function concludes
-		defer fmt.Print("\033[?25h")
-
-		// Create a reader and wait for the enter key
-		reader := bufio.NewReader(os.Stdin)
-		reader.ReadString('\n')
+		// Listen for enter or escape
+		p := tea.NewProgram(messageModel{})
+		p.Start()
 	}
 }
