@@ -175,7 +175,7 @@ func applyGnomeCategoryFolders() {
 
 	ui.Message("Removing the existing " + color.Red("category folders") + " from " + color.Yellow("Gnome") + "...")
 	gnome.RestoreDefault()
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	ui.Message("Applying configured " + color.Red("category folders") + "...")
 	gnome.ApplyCategories()
 	ui.MessageWait("Successfully applied " + color.Red("category folders") + " in " + color.Yellow("Gnome"))
