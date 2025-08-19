@@ -203,12 +203,13 @@ func Populate() {
 	// Regex to pull just the name out of the category file
 	catNameRegex := regexp.MustCompile("(?i)(.*)\\.category")
 
-	// Initialize the List with all the applications in uncategorized
+	// (Re-)Initialize the List with all the applications in uncategorized
 	List = []Data{ { File: "", Name: "Uncategorized", Applications: []application.Data{} } }
 
 	// Store the application file names and List so we can track and populate uncategorized items
 	appFiles := application.GetFiles(application.List)
-	appList := application.List
+	appList := make([]application.Data, len(application.List))
+	copy(appList, application.List[:])
 
 	// The set of files in Directory
 	catFiles, _ := os.ReadDir(Directory)
